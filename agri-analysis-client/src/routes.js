@@ -1,5 +1,5 @@
-import A from '@/pages/a'
-import B from '@/pages/b'
+import A from '@/views/a'
+import B from '@/views/b'
 
 const routes =  [
   { path: '/a', component: A },
