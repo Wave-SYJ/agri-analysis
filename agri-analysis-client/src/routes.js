@@ -1,9 +1,22 @@
-import A from '@/views/a'
-import B from '@/views/b'
-
 const routes =  [
-  { path: '/a', component: A },
-  { path: '/b', component: B }
+  {
+    path: '/login',
+    component: () => import("@/views/login")
+  },
+  {
+    path: 'dashboard',
+    component: () => import("@/components/Layout"),
+    children: [
+      {
+        path: '/dashboard/a',
+        component: () => import("@/views/a")
+      },
+      {
+        path: '/dashboard/b',
+        component: () => import("@/views/b")
+      }
+    ]
+  }
 ]
 
 export default routes
