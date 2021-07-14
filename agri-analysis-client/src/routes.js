@@ -4,6 +4,10 @@ const routes =  [
     component: () => import("@/views/login")
   },
   {
+    path: '/',
+    redirect: '/dashboard/a'
+  },
+  {
     path: 'dashboard',
     component: () => import("@/components/Layout"),
     children: [
