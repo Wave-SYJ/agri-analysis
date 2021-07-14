@@ -5,19 +5,19 @@ const routes =  [
   },
   {
     path: '/',
-    redirect: '/dashboard/a'
+    redirect: '/dashboard/monitor'
   },
   {
     path: 'dashboard',
     component: () => import("@/components/Layout"),
     children: [
       {
-        path: '/dashboard/a',
-        component: () => import("@/views/a")
+        path: '/dashboard/monitor',
+        component: () => import("@/views/monitor")
       },
       {
-        path: '/dashboard/b',
-        component: () => import("@/views/b")
+        path: '/dashboard/query',
+        component: () => import("@/views/query")
       }
     ]
   }
