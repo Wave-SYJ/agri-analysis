@@ -24,7 +24,7 @@
   </div>
 </template>
 
-<script>
+<script>//区域行情
 export default {
   data() {
     return {
