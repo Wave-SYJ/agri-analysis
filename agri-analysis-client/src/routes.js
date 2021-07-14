@@ -1,44 +1,68 @@
 const routes =  [
   {
     path: '/login',
+    name: 'login',
     component: () => import("@/views/login")
   },
   {
     path: '/',
-    redirect: '/dashboard/a'
+    name: 'root',
+    redirect: '/dashboard/monitor'
   },
   {
     path: 'dashboard',
+    name: 'dashboard',
     component: () => import("@/components/Layout"),
     children: [
       {
-        path: '/dashboard/a',
-        component: () => import("@/views/a")
+        path: '/dashboard/monitor',
+        name: 'dashboard-monitor',
+        component: () => import("@/views/monitor")
       },
       {
-        path: '/dashboard/b/a',
-        component: () => import("@/views/b/a")
+        path: '/dashboard/predict',
+        name: 'dashboard-predict',
+        component: () => import("@/views/predict")
       },
       {
-        path: '/dashboard/b/b',
-        component: () => import("@/views/b/b")
+        path: '/dashboard/find',
+        name: 'dashboard-find',
+        redirect: '/dashboard/find/region',
+        children: [
+          {
+            path: '/dashboard/find/region',
+            name: 'dashboard-find-region',
+            component: () => import("@/views/find/region")
+          },
+          {
+            path: '/dashboard/find/compare',
+            name: 'dashboard-find-compare',
+            component: () => import("@/views/find/compare")
+          },
+          {
+            path: '/dashboard/find/sell',
+            name: 'dashboard-find-sell',
+            component: () => import("@/views/find/sell")
+          }
+        ]
       },
       {
-        path: '/dashboard/b/c',
-        component: () => import("@/views/b/c")
-      },
-      {
-        path: '/dashboard/c',
-        component: () => import("@/views/c")
-      },
-      {
-        path: '/dashboard/d/a',
-        component: () => import("@/views/d/a")
-      },
-      {
-        path: '/dashboard/d/b',
-        component: () => import("@/views/d/b")
-      },
+        path: '/dashboard/admin',
+        name: 'dashboard-admin',
+        redirect: '/dashboard/admin/data',
+        children: [
+          {
+            path: '/dashboard/admin/data',
+            name: 'dashboard-admin-data',
+            component: () => import("@/views/admin/data")
+          },
+          {
+            path: '/dashboard/admin/user',
+            name: 'dashboard-admin-user',
+            component: () => import("@/views/admin/user")
+          }
+        ]
+      }
     ]
   }
 ]
