@@ -9,7 +9,7 @@
     </a>
     <div class="header-title">农产品数据分析系统</div>
     <div class="header-user">
-      <el-link :underline="false" type="primary">登录</el-link>
+      <el-link :underline="false" type="primary" @click="$router.push('/login')">登录</el-link>
     </div>
   </div>
 </template>

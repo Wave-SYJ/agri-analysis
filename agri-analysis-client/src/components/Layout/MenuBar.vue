@@ -1,5 +1,5 @@
 <template>
-  <el-menu router style="height: 100%">
+  <el-menu :default-active="currentRoutePath" router style="height: 100%">
     <fragment v-for="route in routes" :key="route.path">
       <el-menu-item v-if="!route.children" :index="route.path">
         <i :class="route.meta.icon"></i>
@@ -27,6 +27,11 @@ export default {
       routes: dashboardRoutes,
     };
   },
+  computed: {
+    currentRoutePath() {
+      return this.$route.path
+    }
+  }
 };
 </script>
 

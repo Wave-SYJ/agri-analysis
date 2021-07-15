@@ -1,14 +1,14 @@
 <template>
-  <countainer>
-    <el-header style="padding: 0"><Header /></el-header>
-    <el-container>
+  <el-container class="layout-container">
+    <el-header class="layout-header-wrapper" style="padding: 0"><Header /></el-header>
+    <el-container class="layout-center-wrapper">
       <el-aside width="200px"><MenuBar /></el-aside>
       <el-container>
         <el-main><router-view /></el-main>
       </el-container>
     </el-container>
-    <el-footer style="border-top: solid 1px #e6e6e6;"><Footer /></el-footer>
-  </countainer>
+    <el-footer class="layout-footer-wrapper" style="border-top: solid 1px #e6e6e6;"><Footer /></el-footer>
+  </el-container>
 </template>
 
 <script>
@@ -25,5 +25,25 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
+
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+
+  .layout-header-wrapper {
+    flex: none;
+  }
+
+  .layout-center-wrapper {
+    flex: auto;
+  }
+
+  .layout-footer-wrapper {
+    flex: none;
+  }
+}
+
 </style>
