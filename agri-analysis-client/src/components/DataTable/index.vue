@@ -12,7 +12,7 @@
     </div>
 
     <div class="page-main">
-      <el-table :data="tableData">
+      <el-table :data="tableData" :height="tableHeight">
         <template v-for="column in columns">
           // index
           <el-table-column
@@ -92,7 +92,11 @@
                   ).title
                 }}
               </span>
-              <el-select v-else v-model="editingObj[column.prop]" placeholder="请选择">
+              <el-select
+                v-else
+                v-model="editingObj[column.prop]"
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="option in column.options"
                   :key="option.value"
@@ -149,6 +153,17 @@
         </template>
       </el-table>
     </div>
+    <div class="page-footer">
+      <el-pagination
+        class="page-footer-pagination"
+        :current-page="currentPage"
+        :page-sizes="[100, 200, 300, 400]"
+        :page-size="100"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="400"
+      >
+      </el-pagination>
+    </div>
   </div>
 </template>
 
@@ -165,6 +180,8 @@ export default {
       dayjs,
       editingIndex: null,
       editingObj: {},
+      currentPage: 1,
+      documentHeight: document.documentElement.clientHeight,
     };
   },
   methods: {
@@ -177,6 +194,15 @@ export default {
       this.editingObj = {};
     },
   },
+  mounted() {
+    window.onresize = () =>
+      (this.documentHeight = document.documentElement.clientHeight);
+  },
+  computed: {
+    tableHeight() {
+      return Math.max(this.documentHeight - 255, 400)
+    }
+  }
 };
 </script>
 
@@ -192,6 +218,16 @@ export default {
 
   .page-main {
     flex: auto;
+  }
+
+  .page-footer {
+    flex: none;
+    display: flex;
+    margin-top: 15px;
+
+    .page-footer-pagination {
+      margin-left: auto;
+    }
   }
 }
 </style>
