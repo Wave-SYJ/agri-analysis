@@ -83,6 +83,15 @@ export const dashboardRoutes = [
           title: '用户管理',
           icon: 'el-icon-user'
         },
+      },
+      {
+        path: '/dashboard/admin/password',
+        name: 'dashboard-admin-password',
+        component: () => import("@/views/admin/password"),
+        meta: {
+          title: '修改密码',
+          icon: 'el-icon-lock'
+        }
       }
     ]
   }
