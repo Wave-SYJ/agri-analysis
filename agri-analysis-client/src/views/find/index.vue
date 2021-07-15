@@ -1,5 +1,5 @@
 <template>
-  <div>数据预测</div>
+  <router-view />
 </template>
 
 <script>

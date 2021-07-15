@@ -13,7 +13,8 @@ Vue.use(ElementUI);
 Vue.use(Fragment.Plugin);
 
 const router = new VueRouter({
-  routes
+  routes,
+  mode: 'history'
 })
 
 new Vue({

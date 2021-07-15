@@ -25,6 +25,7 @@ export const dashboardRoutes = [
       title: '数据查询',
       icon: 'el-icon-search'
     },
+    component: () => import("@/views/find"),
     children: [
       {
         path: '/dashboard/find/region',
@@ -63,6 +64,7 @@ export const dashboardRoutes = [
       title: '数据管理',
       icon: 'el-icon-edit'
     },
+    component: () => import("@/views/admin"),
     children: [
       {
         path: '/dashboard/admin/data',
@@ -95,11 +97,12 @@ const routes = [
   {
     path: '/',
     name: 'root',
-    redirect: '/dashboard/monitor'
+    redirect: '/dashboard'
   },
   {
     path: '/dashboard',
     name: 'dashboard',
+    redirect: '/dashboard/monitor',
     component: () => import("@/components/Layout"),
     children: dashboardRoutes
   }

@@ -1,12 +1,12 @@
 <template>
   <div class="header-container">
-    <a class="header-icon-wrapper" href="/">
+    <div class="header-icon-wrapper" @click="$router.push('/')">
       <el-image
         class="header-icon"
         fit="contain"
         :src="require('@/assets/images/logo.png')"
       ></el-image>
-    </a>
+    </div>
     <div class="header-title">农产品数据分析系统</div>
     <div class="header-user">
       <el-link :underline="false" type="primary" @click="$router.push('/login')">登录</el-link>
@@ -29,10 +29,10 @@ export default {};
   z-index: 10;
 
   .header-icon-wrapper {
-    display: block;
     width: 200px;
     text-align: center;
     flex: none;
+    cursor: pointer;
 
     .header-icon {
       width: 120px;
