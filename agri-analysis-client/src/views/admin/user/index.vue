@@ -1,10 +1,22 @@
 <template>
-  <div>用户管理</div>
+  <DataTable :tableData="tableData" :columns="columns" />
 </template>
 
 <script>
-export default {
+import DataTable from "@/components/DataTable"
+import tableData from './fakeData'
+import columns from './columns'
 
+export default {
+  components: {
+    DataTable
+  },
+  data() {
+    return {
+      tableData,
+      columns
+    }
+  }
 }
 </script>
 

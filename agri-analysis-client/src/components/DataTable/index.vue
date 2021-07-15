@@ -20,6 +20,7 @@
             :key="column.key || column.prop || column.title"
             type="index"
             width="50"
+            align="right"
           />
 
           // date
@@ -77,11 +78,38 @@
             </template>
           </el-table-column>
 
+          // options
+          <el-table-column
+            v-if="column.type === 'select'"
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+          >
+            <template v-slot="scope">
+              <span v-if="editingIndex !== scope.$index || !column.editable">
+                {{
+                  column.options.find(
+                    (option) => option.value === scope.row[column.prop]
+                  ).title
+                }}
+              </span>
+              <el-select v-else v-model="editingObj[column.prop]" placeholder="请选择">
+                <el-option
+                  v-for="option in column.options"
+                  :key="option.value"
+                  :label="option.title"
+                  :value="option.value"
+                >
+                </el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+
           // operations
           <el-table-column
             v-if="column.type === 'operations'"
             :key="column.key || column.prop || column.title"
             :label="column.title"
+            :width="250"
           >
             <template v-slot="scope">
               <el-button
@@ -98,12 +126,22 @@
                 <el-button size="small" type="primary" icon="el-icon-check">
                   确定
                 </el-button>
-                <el-button @click="handleCancelEdit" size="small" icon="el-icon-close">
+                <el-button
+                  @click="handleCancelEdit"
+                  size="small"
+                  icon="el-icon-close"
+                >
                   取消
                 </el-button>
               </template>
 
-              <el-button v-if="editingIndex !== scope.$index" :disabled="editingIndex !== null" size="small" type="danger" icon="el-icon-delete">
+              <el-button
+                v-if="editingIndex !== scope.$index"
+                :disabled="editingIndex !== null"
+                size="small"
+                type="danger"
+                icon="el-icon-delete"
+              >
                 删除
               </el-button>
             </template>
@@ -132,13 +170,13 @@ export default {
   methods: {
     handleStartEdit(index, obj) {
       this.editingIndex = index;
-      this.editingObj = {...obj}
+      this.editingObj = { ...obj };
     },
     handleCancelEdit() {
       this.editingIndex = null;
-      this.editingObj = {}
-    }
-  }
+      this.editingObj = {};
+    },
+  },
 };
 </script>
 
