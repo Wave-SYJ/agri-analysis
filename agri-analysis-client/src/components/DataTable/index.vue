@@ -13,7 +13,7 @@
 
     <div class="page-main">
       <el-table :data="tableData">
-        <template v-for="(column, index) in columns">
+        <template v-for="column in columns">
           // index
           <el-table-column
             v-if="column.type === 'index'"
@@ -29,7 +29,15 @@
             :label="column.title"
           >
             <template v-slot="scope">
-              {{ dayjs(scope.row[column.prop]).format(column.format) }}
+              <span v-if="editingIndex !== scope.$index || !column.editable">
+                {{ dayjs(scope.row[column.prop]).format(column.format) }}
+              </span>
+              <el-date-picker
+                v-else
+                v-model="editingObj[column.prop]"
+                type="date"
+                placeholder="选择日期"
+              />
             </template>
           </el-table-column>
 
@@ -40,7 +48,10 @@
             :label="column.title"
           >
             <template v-slot="scope">
-              {{ scope.row[column.prop] }}
+              <span v-if="editingIndex !== scope.$index || !column.editable">
+                {{ scope.row[column.prop] }}
+              </span>
+              <el-input v-else v-model="editingObj[column.prop]" />
             </template>
           </el-table-column>
 
@@ -51,7 +62,18 @@
             :label="column.title"
           >
             <template v-slot="scope">
-              {{ scope.row[column.prop] }} {{ column.suffix }}
+              <span v-if="editingIndex !== scope.$index || !column.editable">
+                {{ scope.row[column.prop] }} {{ column.suffix }}
+              </span>
+              <span v-else>
+                <el-input-number
+                  style="margin-right: 5px"
+                  v-model="editingObj[column.prop]"
+                  :precision="2"
+                  :step="0.1"
+                />
+                {{ column.suffix }}
+              </span>
             </template>
           </el-table-column>
 
@@ -61,13 +83,29 @@
             :key="column.key || column.prop || column.title"
             :label="column.title"
           >
-            <template>
-              <el-button size="small" type="primary" icon="el-icon-edit"
-                >编辑</el-button
+            <template v-slot="scope">
+              <el-button
+                v-if="editingIndex !== scope.$index"
+                :disabled="editingIndex !== null"
+                size="small"
+                type="primary"
+                icon="el-icon-edit"
+                @click="handleStartEdit(scope.$index, scope.row)"
               >
-              <el-button size="small" type="danger" icon="el-icon-delete"
-                >删除</el-button
-              >
+                编辑
+              </el-button>
+              <template v-else>
+                <el-button size="small" type="primary" icon="el-icon-check">
+                  确定
+                </el-button>
+                <el-button @click="handleCancelEdit" size="small" icon="el-icon-close">
+                  取消
+                </el-button>
+              </template>
+
+              <el-button v-if="editingIndex !== scope.$index" :disabled="editingIndex !== null" size="small" type="danger" icon="el-icon-delete">
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </template>
@@ -87,9 +125,20 @@ export default {
   data() {
     return {
       dayjs,
-      editingIndex: null
+      editingIndex: null,
+      editingObj: {},
     };
   },
+  methods: {
+    handleStartEdit(index, obj) {
+      this.editingIndex = index;
+      this.editingObj = {...obj}
+    },
+    handleCancelEdit() {
+      this.editingIndex = null;
+      this.editingObj = {}
+    }
+  }
 };
 </script>
 
