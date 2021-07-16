@@ -4,8 +4,6 @@ import routes from './routes'
 import VueRouter from 'vue-router'
 import './plugin'
 
-
-Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
 
 Vue.use(VueRouter);
