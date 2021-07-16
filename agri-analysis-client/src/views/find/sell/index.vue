@@ -3,6 +3,7 @@
     <el-form inline label-position="right" class="search-pane">
       <el-form-item label="地区">
         <el-cascader
+          collapse-tags
           :options="regionList"
           v-model="searchMarket"
           :props="{ multiple: true }"
@@ -12,6 +13,7 @@
 
       <el-form-item label="种类">
         <el-cascader
+          collapse-tags
           :options="regionList"
           v-model="searchType"
           :props="{ multiple: true }"
