@@ -24,7 +24,16 @@
       </el-form-item>
     </el-form>
 
-    <div>您查询的农作物数据天数为：{{ dayCount }}</div>
+    <div style="margin-bottom: 20px">您查询的农作物数据天数为：{{ dayCount }}</div>
+    <div>
+      选择显示的时间间隔：
+      <el-select placeholder="请选择">
+        <el-option label="年" value="year" />
+        <el-option label="月" value="month" />
+        <el-option label="日" value="day" />
+      </el-select>
+      <el-button style="margin-left: 20px">确认</el-button>
+    </div>
   </div>
 </template>
 
@@ -36,7 +45,7 @@ export default {
       regionList,
       searchMarket: null,
       searchType: null,
-      dayCount: 0
+      dayCount: 0,
     };
   },
   methods: {
