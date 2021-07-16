@@ -1,3 +1,5 @@
+import Layout from '@/components/Layout'
+
 export const dashboardRoutes = [
   {
     path: '/dashboard/monitor',
@@ -25,7 +27,7 @@ export const dashboardRoutes = [
       title: '数据查询',
       icon: 'el-icon-search'
     },
-    component: () => import("@/views/find"),
+    component: Layout,
     children: [
       {
         path: '/dashboard/find/region',
@@ -64,7 +66,7 @@ export const dashboardRoutes = [
       title: '数据管理',
       icon: 'el-icon-edit'
     },
-    component: () => import("@/views/admin"),
+    component: Layout,
     children: [
       {
         path: '/dashboard/admin/data',
@@ -111,10 +113,9 @@ const routes = [
   {
     path: '/dashboard',
     name: 'dashboard',
-    redirect: '/dashboard/monitor',
-    component: () => import("@/components/Layout"),
-    children: dashboardRoutes
-  }
+    redirect: '/dashboard/monitor'
+  },
+  ...dashboardRoutes
 ]
 
 export default routes

@@ -4,7 +4,7 @@
     <el-container class="layout-center-wrapper">
       <el-aside width="200px"><MenuBar /></el-aside>
       <el-container>
-        <el-main><router-view /></el-main>
+        <el-main><transition name="fade-transform" mode="out-in"><router-view /></transition></el-main>
       </el-container>
     </el-container>
     <el-footer class="layout-footer-wrapper" style="border-top: solid 1px #e6e6e6;"><Footer /></el-footer>
