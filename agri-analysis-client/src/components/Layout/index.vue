@@ -1,13 +1,13 @@
 <template>
-  <el-container>
+  <el-container style="height: 500px; border: 1px solid #eee">
     <el-header><Header /></el-header>
     <el-container>
-      <el-aside width="200px"><MenuBar /></el-aside>
+      <el-aside width="300px"><MenuBar /></el-aside>
       <el-container>
         <el-main><router-view /></el-main>
-        <el-footer><Footer /></el-footer>
       </el-container>
     </el-container>
+    <el-footer><Footer /></el-footer>
   </el-container>
 </template>
 
@@ -25,4 +25,6 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+
+</style>

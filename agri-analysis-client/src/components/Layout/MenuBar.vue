@@ -1,45 +1,47 @@
 <template>
-  <el-menu
-    default-active="2"
-    class="el-menu-vertical-demo"
-    @open="handleOpen"
-    @close="handleClose"
-  >
-    <el-menu-item index="1">
-      <i class="el-icon-menu"></i>
-      <span slot="title">数据更新</span>
-    </el-menu-item>
-    <el-submenu index="2">
-      <template slot="title">
-        <i class="el-icon-location"></i>
-        <span>数据查询</span>
-      </template>
-      <el-menu-item index="2-1">区域行情查询</el-menu-item>
-      <el-menu-item index="2-2">品种对比</el-menu-item>
-      <el-menu-item index="2-3">售卖行情</el-menu-item>
-    </el-submenu>
-
-    <el-menu-item index="3">
-      <i class="el-icon-document"></i>
-      <span slot="title">数据预测</span>
-    </el-menu-item>
-
-    <el-menu-item index="4">
-      <i class="el-icon-setting"></i>
-      <span slot="title">数据修改</span>
-    </el-menu-item>
-  </el-menu>
+<el-aside>
+  <ul class="menu-bar">
+    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+    <el-menu :default-openeds="['1', '4']">
+      <el-menu-item index="1">
+        <template slot="title"><i class="el-icon-view"></i><router-link to="/dashboard/a" class="a">数据更新</router-link></template>
+      </el-menu-item>
+      <el-submenu index="2">
+        <template slot="title"><i class="el-icon-search"></i>数据查询</template>
+        <el-menu-item index="2-1" style="color=rgb(0,0,0)"><i class="el-icon-location-outline"></i><router-link to="/dashboard/b/a" class="a">区域行情</router-link></el-menu-item>
+        <el-menu-item index="2-1" style="color=rgb(0,0,0)"><i class="el-icon-ship"></i><router-link to="/dashboard/b/b" class="a">品种对比</router-link></el-menu-item>
+        <el-menu-item index="2-1" style="color=rgb(0,0,0)"><i class="el-icon-cherry"></i><router-link to="/dashboard/b/c" class="a">售卖行情</router-link></el-menu-item>
+      </el-submenu>
+      <el-menu-item index="3">
+        <template slot="title"><i class="el-icon-data-line" ></i><router-link to="/dashboard/c" class="a">数据预测</router-link></template>
+      </el-menu-item>
+      <el-submenu index="4">
+        <template slot="title"><i class="el-icon-edit"></i>数据修改</template>
+        <el-menu-item index="4-1" style="color=rgb(0,0,0)"><i class="el-icon-edit-outline"></i><router-link to="/dashboard/d/a" class="a">农产品数据修改</router-link></el-menu-item>
+        <el-menu-item index="4-2" style="color=rgb(0,0,0)"><i class="el-icon-user"></i><router-link to="/dashboard/d/b" class="a">管理员git</router-link></el-menu-item>
+      </el-submenu>
+    </el-menu>
+  </el-aside>
+  
+  </ul>
+</el-aside>
 </template>
 
 <script>
-export default {
-  methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
-    },
-  },
-};
+export default {};
 </script>
+
+<style scoped>
+.menu-bar {
+  padding-top: 10px;
+  height: 620px;
+  width: 100px;
+  background-color: rgb(255, 255, 255);
+  color: #333;
+}
+.a{
+  text-decoration: none;
+  color: black;
+}
+
+</style>
