@@ -90,14 +90,15 @@
       <el-button
         round
         style="margin-left: 64px; color: white; background-color: #409eff"
-        @click="displaychart"
-        >显示图表</el-button
-      >
+        @click="displaychart">显示图表</el-button>
     </el-row>
-    <img style="margin-top: 10px" src="paris.jpg" alt="绘制" />
+    <div id="echarts_b_c" class="echarts"></div>
   </div>
 </template>
  
+
+
+
 <script>
 export default {
   data() {
@@ -144,8 +145,15 @@ export default {
       value4: null,
       timespan: null,
       x: null,
+      xAxisData: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      dataTest: [5, 9, 3, 7, 8, 12, 45, 25, 11, 6, 9, 20],
     };
   },
+
+  mounted() {
+    this.drowLine();
+  },
+
   methods: {
     queryclick() {
       this.x = console.log(this.value1);
@@ -154,6 +162,106 @@ export default {
     province_select() {},
     city_select() {},
     market_select() {},
+    drowLine() {
+      let echarts = this.$echarts.init(document.getElementById("echarts_b_c"));
+      echarts.setOption({
+        backgroundColor: "#000",
+        title: {
+          text: "农产品售卖行情",
+          textStyle: {
+            color: "#fff",
+            fontSize: 18,
+            fontWeight: "bold",
+          },
+          subtext: "已根据您选择的时间间隔显示图表",
+          subtextStyle: {
+            color: "#ddd",
+          },
+        },
+        tooltip: {
+          show: true,
+          trigger: "axis",
+          axisPointer: {
+            type: "cross",
+            crossStyle: {
+              color: "#ddd",
+            },
+          },
+        },
+        grid: {
+          left: 20,
+          right: 20,
+          top: 80,
+          bottom: 20,
+          containLabel: true,
+        },
+        xAxis: {
+          show: true,
+          axisLabel: {
+            interval: 1,
+            rotate: -20,
+            margin: 30,
+            textStyle: {
+              color: "#ddd",
+              align: "center",
+            },
+          },
+          axisTick: {
+            alignWithLabel: true,
+            lineStyle: {
+              color: "#ddd",
+            },
+          },
+          data: this.xAxisData,
+        },
+        yAxis: [
+          {
+            type: "value",
+            name: "(人/次)",
+            nameTextStyle: {
+              color: "#ddd",
+            },
+            axisLabel: {
+              textStyle: {
+                color: "#ddd",
+              },
+            },
+            axisTick: {
+              alignWithLabel: true,
+              lineStyle: {
+                color: "#ddd",
+              },
+            },
+            splitLine: {
+              show: false,
+            },
+          },
+        ],
+        series: [
+          {
+            type: "line",
+            name: "测试",
+            stack: "人数",
+            data: this.dataTest,
+            label: {
+              normal: {
+                show: true,
+                position: "insideTop",
+                offset: [0, 20],
+                textStyle: {
+                  color: "#000",
+                },
+              },
+              emphasis: {
+                textStyle: {
+                  color: "#fff",
+                },
+              },
+            },
+          },
+        ],
+      });
+    },
   },
 };
 </script>
@@ -178,5 +286,11 @@ export default {
   width: 100%;
   height: 100px;
   margin-top: 25px;
+}
+.echarts {
+  width: 900px;
+  height: 500px;
+  background-color: #fff;
+  margin: 5px;
 }
 </style>
