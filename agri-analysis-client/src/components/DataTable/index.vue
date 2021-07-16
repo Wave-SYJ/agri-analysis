@@ -9,10 +9,15 @@
           删除
         </el-button>
       </div>
+      <div class="page-header-right">
+        <el-button icon="el-icon-search" @click="handleStartSearch"
+          >搜索</el-button
+        >
+      </div>
     </div>
 
     <div class="page-main">
-      <el-table :data="tableData" :height="tableHeight">
+      <el-table :data="currentData" :height="tableHeight">
         <template v-for="column in columns">
           // index
           <el-table-column
@@ -153,6 +158,50 @@
         </template>
       </el-table>
     </div>
+
+    <el-drawer
+      title="高级搜索"
+      :visible.sync="searchDrawerShow"
+      direction="rtl"
+    >
+      <el-form
+        label-position="right"
+        label-width="80px"
+        style="margin-right: 30px"
+      >
+        <template v-for="column in columns">
+          <el-form-item
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+            v-if="column.type === 'text'"
+          >
+            <el-input v-model="searchObj[column.prop]" />
+          </el-form-item>
+          <el-form-item
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+            v-else-if="column.type === 'date'"
+          >
+            <el-date-picker
+              v-model="searchObj[column.prop]"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+            >
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+            v-if="column.type === 'number'"
+          >
+            <NumberRangeInput v-model="searchObj[column.prop]" />
+          </el-form-item>
+        </template>
+      </el-form>
+    </el-drawer>
+
     <div class="page-footer">
       <el-pagination
         class="page-footer-pagination"
@@ -169,11 +218,15 @@
 
 <script>
 import dayjs from "dayjs";
+import NumberRangeInput from '@/components/NumberRangeInput'
 
 export default {
   props: {
     tableData: Array,
     columns: Array,
+  },
+  components: {
+    NumberRangeInput
   },
   data() {
     return {
@@ -182,6 +235,10 @@ export default {
       editingObj: {},
       currentPage: 1,
       documentHeight: document.documentElement.clientHeight,
+
+      searchDrawerShow: false,
+      searchObj: {},
+      currentData: [],
     };
   },
   methods: {
@@ -193,15 +250,44 @@ export default {
       this.editingIndex = null;
       this.editingObj = {};
     },
+    handleStartSearch() {
+      this.searchDrawerShow = true;
+    },
+    getSearchInitObj() {
+      const result = {};
+      this.columns
+        .filter((column) => column.searchable)
+        .forEach((column) => {
+          switch (column.type) {
+            case "text":
+              result[column.prop] = "";
+              break;
+            case "date":
+              result[column.prop] = [null, null];
+              break;
+            case "number":
+              result[column.prop] = [null, null];
+              break;
+            default:
+              result[column.prop] = null;
+              break;
+          }
+        });
+      return result;
+    },
   },
   mounted() {
+    this.currentData = this.tableData;
     window.onresize = () =>
       (this.documentHeight = document.documentElement.clientHeight);
   },
   computed: {
     tableHeight() {
-      return Math.max(this.documentHeight - 255, 400)
-    }
+      return Math.max(this.documentHeight - 258, 400);
+    },
+  },
+  created() {
+    this.searchObj = this.getSearchInitObj()
   }
 };
 </script>
@@ -214,6 +300,10 @@ export default {
   .page-header {
     flex: none;
     margin-bottom: 10px;
+    display: flex;
+    .page-header-right {
+      margin-left: auto;
+    }
   }
 
   .page-main {
