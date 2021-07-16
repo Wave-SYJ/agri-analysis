@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')">
-          提交
+          确定
         </el-button>
         <el-button @click="passwordObj = {}">清空</el-button>
       </el-form-item>
