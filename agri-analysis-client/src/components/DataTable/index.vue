@@ -199,6 +199,10 @@
             <NumberRangeInput v-model="searchObj[column.prop]" />
           </el-form-item>
         </template>
+        <el-form-item>
+          <el-button type="primary">搜索</el-button>
+          <el-button>取消</el-button>
+        </el-form-item>
       </el-form>
     </el-drawer>
 
@@ -218,7 +222,7 @@
 
 <script>
 import dayjs from "dayjs";
-import NumberRangeInput from '@/components/NumberRangeInput'
+import NumberRangeInput from "@/components/NumberRangeInput";
 
 export default {
   props: {
@@ -226,7 +230,7 @@ export default {
     columns: Array,
   },
   components: {
-    NumberRangeInput
+    NumberRangeInput,
   },
   data() {
     return {
@@ -287,8 +291,8 @@ export default {
     },
   },
   created() {
-    this.searchObj = this.getSearchInitObj()
-  }
+    this.searchObj = this.getSearchInitObj();
+  },
 };
 </script>
 
