@@ -1,6 +1,6 @@
 <template>
   <!--<div class="footer">@copyright 版权归东南大学软件学院2021暑期实训第五组所有</div>-->
-  <el-footer>@copyright&#8194;&#8194;版权归东南大学软件学院2021暑期实训第五组所有</el-footer>
+  <div class="copyright">@copyright&#8194;&#8194;版权归东南大学软件学院2021暑期实训第五组所有</div>
   <!-- <div>Footer</div> -->
   
 </template>
@@ -12,14 +12,13 @@ export default {
 </script>
 
 <style scoped>
- .el-footer {
-    background-color: rgba(255, 255, 255, 0.712);
+ .copyright { 
     color: rgba(0, 0, 0, 0.678);
     text-align: center;
     font-size:12px;
+    height: 50px;
     line-height: 50px;
-    height:100px;
-  }
+}
   
 </style>
 

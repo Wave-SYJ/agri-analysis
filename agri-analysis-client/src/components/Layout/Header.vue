@@ -1,33 +1,59 @@
 <template>
-  <!--<div class="header">农产品数据分析系统</div>-->
-  <el-header>
-      <!--<div style="text-align: center; font-size: 30px" >农产品数据分析系统</div>-->
-      <el-dropdown style="text-align: right; font-size: 30px;">
-        <i class="el-icon-setting" style="margin-right: 20px"></i>
-        <el-dropdown-menu slot="dropdown">
-        <!--<el-dropdown-item>切换主题</el-dropdown-item>
-          <el-dropdown-item>切换语言</el-dropdown-item>-->
-          <el-dropdown-item>网页简介</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-    </el-header>
+  <div class="header-container">
+    <div class="header-icon-wrapper" @click="$router.push('/')">
+      <el-image
+        class="header-icon"
+        fit="contain"
+        :src="require('@/assets/images/logo.png')"
+      ></el-image>
+    </div>
+    <div class="header-title">农产品数据分析系统</div>
+    <div class="header-user">
+      <el-link :underline="false" type="primary" @click="$router.push('/login')">登录</el-link>
+    </div>
+  </div>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>
 
-<style scoped>
-
-.el-header {
+<style scoped lang="scss">
+.header-container {
+  height: 100%;
   width: 100%;
-  height: 40px;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  background-color: #ebf1f6;
   display: flex;
-  align-items: center;
-}
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 10;
 
+  .header-icon-wrapper {
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    cursor: pointer;
+
+    .header-icon {
+      width: 120px;
+      height: 50px;
+    }
+  }
+
+  .header-title {
+    flex: auto;
+    text-align: center;
+    font-size: 20px;
+    line-height: 60px;
+    font-weight: bold;
+  }
+
+  .header-user {
+    flex: none;
+    line-height: 60px;
+    margin-right: 30px;
+  }
+}
 </style>
