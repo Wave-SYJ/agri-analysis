@@ -30,12 +30,15 @@ export default {};
 
   .header-icon-wrapper {
     width: 200px;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex: none;
     cursor: pointer;
 
     .header-icon {
       width: 120px;
+      height: 50px;
     }
   }
 
