@@ -1,7 +1,7 @@
 <template>
   <el-menu :default-active="currentRoutePath" router style="height: 100%">
     <fragment v-for="route in routes" :key="route.path">
-      <el-menu-item v-if="!route.children" :index="route.path">
+      <el-menu-item v-if="!route.meta.hasChildren" :index="route.path">
         <i :class="route.meta.icon"></i>
         <span slot="title">{{ route.meta.title }}</span>
       </el-menu-item>

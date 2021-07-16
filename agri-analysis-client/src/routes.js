@@ -4,7 +4,11 @@ export const dashboardRoutes = [
   {
     path: '/dashboard/monitor',
     name: 'dashboard-monitor',
-    component: () => import("@/views/monitor"),
+    component: Layout,
+    children: [{
+      path: '/dashboard/monitor',
+      component: () => import("@/views/monitor")
+    }],
     meta: {
       title: '数据监控',
       icon: 'el-icon-view'
@@ -13,7 +17,11 @@ export const dashboardRoutes = [
   {
     path: '/dashboard/predict',
     name: 'dashboard-predict',
-    component: () => import("@/views/predict"),
+    component: Layout,
+    children: [{
+      path: '/dashboard/predict',
+      component: () => import("@/views/predict")
+    }],
     meta: {
       title: '数据预测',
       icon: 'el-icon-data-line'
@@ -25,7 +33,8 @@ export const dashboardRoutes = [
     redirect: '/dashboard/find/region',
     meta: {
       title: '数据查询',
-      icon: 'el-icon-search'
+      icon: 'el-icon-search',
+      hasChildren: true
     },
     component: Layout,
     children: [
@@ -64,7 +73,8 @@ export const dashboardRoutes = [
     redirect: '/dashboard/admin/data',
     meta: {
       title: '数据管理',
-      icon: 'el-icon-edit'
+      icon: 'el-icon-edit',
+      hasChildren: true
     },
     component: Layout,
     children: [
