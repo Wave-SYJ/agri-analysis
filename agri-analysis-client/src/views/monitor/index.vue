@@ -100,10 +100,11 @@
           </el-form>
           <div class="fragment-body-charts">
             <v-chart
+              autoresize
               class="fragment-body-line-chart"
               :option="lineChartOption"
             />
-            <v-chart class="fragment-body-pie-chart" :option="pieChartOption" />
+            <v-chart autoresize class="fragment-body-pie-chart" :option="pieChartOption" />
           </div>
         </div>
       </div>
@@ -397,16 +398,17 @@ export default {
         display: flex;
         margin-top: 10px;
         justify-content: space-evenly;
+        width: 100%;
 
         .fragment-body-line-chart {
           height: 500px;
-          width: 800px;
+          width: 500px;
           flex: none;
         }
 
         .fragment-body-pie-chart {
           height: 500px;
-          width: 800px;
+          width: 500px;
           flex: none;
         }
       }
