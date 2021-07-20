@@ -95,14 +95,16 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button
-                type="primary"
-                icon="el-icon-search"
-                @click="queryclick"
-                >查询</el-button
-              >
+              <el-button type="primary" icon="el-icon-search">查询</el-button>
             </el-form-item>
           </el-form>
+          <div class="fragment-body-charts">
+            <v-chart
+              class="fragment-body-line-chart"
+              :option="lineChartOption"
+            />
+            <v-chart class="fragment-body-pie-chart" :option="pieChartOption" />
+          </div>
         </div>
       </div>
     </div>
@@ -111,10 +113,211 @@
 
 <script>
 import regionList from "./fakeRegionData";
+import * as echarts from "echarts";
+
 export default {
   data() {
     return {
       regionList,
+      searchType: null,
+      searchMarket: null,
+
+      lineChartOption: {
+        backgroundColor: "#FFFFFF",
+        title: {
+          top: 20,
+          text: "抓取数量",
+          textStyle: {
+            family: "微软雅黑",
+            fontWeight: "normal",
+            fontSize: 30,
+            color: "#777879",
+            //align: center
+          },
+          left: "40%",
+        },
+        //提示框组件
+        tooltip: {
+          trigger: "axis", //坐标轴触发
+          axisPointer: {
+            lineStyle: {
+              color: "#EAB543",
+            },
+          },
+        },
+        //图例
+        legend: {
+          top: 20,
+          icon: "rect",
+          itemWidth: 14,
+          itemHeight: 7,
+          itemGap: 13, //间隔
+          data: ["果品", "其他"],
+          right: "4%",
+          textStyle: {
+            fontSize: 20,
+            color: "#73716D",
+          },
+        },
+        //网格
+        grid: {
+          top: 100,
+          left: "2%",
+          right: "2%",
+          bottom: "2%",
+          containLabel: true, //grid区域是否包含刻度标签
+        },
+        xAxis: [
+          {
+            type: "category",
+            boundaryGap: false,
+            axisLine: {
+              lineStyle: {
+                color: "#6F7072",
+              },
+              axisLabel: {
+                margin: 10,
+                fontSize: 20,
+              },
+            },
+            data: ["7-16", "7-17", "7-18", "7-19", "7-20"],
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+            name: "(条)",
+            axisTick: {
+              show: false,
+            },
+            axisLine: {
+              lineStyle: {
+                color: "#6F7072",
+              },
+            },
+            axisLabel: {
+              margin: 10,
+              fontSize: 20,
+            },
+            splitLine: {
+              lineStyle: {
+                color: "#6F7072",
+              },
+            },
+          },
+        ],
+        series: [
+          {
+            name: "果品",
+            type: "line",
+            smooth: true,
+            symbol: "circle",
+            symbolSize: 5,
+            showSymbol: false,
+            lineStyle: {
+              width: 1,
+            },
+            //区域填充样式
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(
+                0,
+                0,
+                0,
+                1,
+                [
+                  {
+                    offset: 0,
+                    color: "rgba(137, 189, 27, 0.3)",
+                  },
+                  {
+                    offset: 0.8,
+                    color: "rgba(137, 189, 27, 0)",
+                  },
+                ],
+                false
+              ),
+              shadowColor: "rgba(0, 0, 0, 0.1)",
+              shadowBlur: 10,
+            },
+            itemStyle: {
+              color: "rgb(137,189,27)",
+              borderColor: "rgba(137,189,2,0.27)",
+              borderWidth: 12,
+            },
+            data: [220, 182, 191, 134, 150],
+          },
+          {
+            name: "其他",
+            type: "line",
+            smooth: true,
+            symbol: "circle",
+            symbolSize: 5,
+            showSymbol: false,
+            lineStyle: {
+              width: 1,
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(
+                0,
+                0,
+                0,
+                1,
+                [
+                  {
+                    offset: 0,
+                    color: "rgba(0, 136, 212, 0.3)",
+                  },
+                  {
+                    offset: 0.8,
+                    color: "rgba(0, 136, 212, 0)",
+                  },
+                ],
+                false
+              ),
+              shadowColor: "rgba(0, 0, 0, 0.1)",
+              shadowBlur: 10,
+            },
+            itemStyle: {
+              color: "rgb(0,136,212)",
+              borderColor: "rgba(0,136,212,0.2)",
+              borderWidth: 12,
+            },
+            data: [120, 110, 125, 145, 122],
+          },
+        ],
+      },
+      pieChartOption: {
+        title: {
+          text: "所占记录数",
+          subtext: "纯属虚构",
+          left: "center",
+        },
+        tooltip: {
+          trigger: "item",
+        },
+        legend: {
+          orient: "vertical",
+          left: "left",
+        },
+        series: [
+          {
+            name: "访问来源",
+            type: "pie",
+            radius: "50%",
+            data: [
+              { value: 1048, name: "果品" },
+              { value: 735, name: "其他" },
+            ],
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)",
+              },
+            },
+          },
+        ],
+      },
     };
   },
 };
@@ -189,6 +392,24 @@ export default {
       display: flex;
       flex-direction: column;
       align-items: center;
+
+      .fragment-body-charts {
+        display: flex;
+        margin-top: 10px;
+        justify-content: space-evenly;
+
+        .fragment-body-line-chart {
+          height: 500px;
+          width: 800px;
+          flex: none;
+        }
+
+        .fragment-body-pie-chart {
+          height: 500px;
+          width: 800px;
+          flex: none;
+        }
+      }
     }
   }
 }
