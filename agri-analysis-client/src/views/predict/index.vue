@@ -28,7 +28,6 @@
     <div class="block">
       <span class="demonstration">按照该时间段预测 </span>
       <el-date-picker
-        v-model="value1"
         type="datetimerange"
         range-separator="至"
         start-placeholder="开始日期"
@@ -54,17 +53,17 @@ export default {
       dayCount: 0,
       timeInterval: null,
       chartOption: {
-        backgroundColor: "#000",
+        backgroundColor: "#fff",
         title: {
           text: "农产品价格预测折线图",
           textStyle: {
-            color: "#fff",
+            color: "#000",
             fontSize: 18,
             fontWeight: "bold",
           },
           subtext: "已根据您选择的时间段预测价格",
           subtextStyle: {
-            color: "#ddd",
+            color: "#000",
           },
         },
         tooltip: {
@@ -73,7 +72,7 @@ export default {
           axisPointer: {
             type: "cross",
             crossStyle: {
-              color: "#ddd",
+              color: "#000",
             },
           },
         },
@@ -90,13 +89,13 @@ export default {
             interval: 1,
             rotate: -20,
             margin: 30,
-            color: "#ddd",
+            color: "#000",
             align: "center",
           },
           axisTick: {
             alignWithLabel: true,
             lineStyle: {
-              color: "#ddd",
+              color: "#000",
             },
           },
           data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -106,15 +105,15 @@ export default {
             type: "value",
             name: "￥",
             nameTextStyle: {
-              color: "#ddd",
+              color: "#000",
             },
             axisLabel: {
-              color: "#ddd",
+              color: "#000",
             },
             axisTick: {
               alignWithLabel: true,
               lineStyle: {
-                color: "#ddd",
+                color: "#000",
               },
             },
             splitLine: {
@@ -136,7 +135,7 @@ export default {
             },
             emphasis: {
               label: {
-                color: "#fff",
+                color: "#000",
               },
             },
           },
