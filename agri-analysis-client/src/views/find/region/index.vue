@@ -23,7 +23,7 @@
         <v-chart autoresize :option="leftOptions" />
       </div>
       <div class="page-main-right">
-
+        <Map />
       </div>
     </div>
   </div>
@@ -31,11 +31,18 @@
 
 <script>
 import regionList from "./fakeRegionData";
+import Map from '@/components/Map'
+
 export default {
+  components: {
+    Map
+  },
   data() {
     return {
       regionList,
+
       searchType: null,
+
       leftOptions: {
         title: {
           text: "富士苹果区域行情",
@@ -67,6 +74,7 @@ export default {
       },
     };
   },
+  methods: {},
 };
 </script>
 
