@@ -23,7 +23,7 @@
         <v-chart autoresize :option="leftOptions" />
       </div>
       <div class="page-main-right">
-        <Map />
+        <Map @changed="handleMapChanged" />
       </div>
     </div>
   </div>
@@ -74,7 +74,11 @@ export default {
       },
     };
   },
-  methods: {},
+  methods: {
+    handleMapChanged(v) {
+      console.log(v)
+    }
+  },
 };
 </script>
 

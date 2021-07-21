@@ -64,11 +64,13 @@ export default {
       this.rightOptions.title.text = `${this.provinceShowing}地图`;
       echarts.registerMap(provinceMap[provinceName], provinceData);
       this.mapLoading = false;
+      this.$emit('changed', provinceName);
     },
     handleMapBack() {
       this.provinceShowing = null;
       this.rightOptions.series[0].map = "china";
       this.rightOptions.title.text = "全国地图";
+      this.$emit('changed', '全国');
     },
   },
 };
