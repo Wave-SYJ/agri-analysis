@@ -1,0 +1,5 @@
+from .admin import bp as home_bp
+
+
+def init_app(app):
+    app.register_blueprint(home_bp)
