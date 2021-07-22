@@ -7,6 +7,8 @@ class City(db.Model):
     name = db.Column(db.String(32), nullable=False)
     province_id = db.Column(db.String(32), db.ForeignKey("province.id"), nullable=False)
 
+    markets = db.relationship("Market", backref="city", lazy="dynamic")
+
     def __init__(self):
         pass
 

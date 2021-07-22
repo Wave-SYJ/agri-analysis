@@ -5,7 +5,8 @@ from . import gen_id
 class Type(db.Model):
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
-    market_id = db.Column(db.String(32), db.ForeignKey("market.id"), nullable=False)
+
+    varieties = db.relationship("Variety", backref="type", lazy="dynamic")
 
     def __init__(self):
         pass

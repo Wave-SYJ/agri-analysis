@@ -7,6 +7,8 @@ class Type(db.Model):
     name = db.Column(db.String(32), nullable=False)
     type_id = db.Column(db.String(32), db.ForeignKey("type.id"), nullable=False)
 
+    products = db.relationship("Product", backref="varieties", lazy="dynamic")
+
     def __init__(self):
         pass
 

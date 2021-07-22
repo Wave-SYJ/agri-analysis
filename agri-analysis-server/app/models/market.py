@@ -8,6 +8,8 @@ class Market(db.Model):
     name = db.Column(db.String(32), nullable=False)
     details = db.Column(db.Text, nullable=True)
 
+    products = db.relationship("Product", backref="market", lazy="dynamic")
+
     def __init__(self):
         pass
 
