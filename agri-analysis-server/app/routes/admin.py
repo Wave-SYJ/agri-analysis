@@ -10,8 +10,11 @@ from app.utils.serialize import serialize
 bp = Blueprint('admin_bp', __name__, url_prefix='/admin')
 
 
-def list_admin():
-    return jsonify(serialize(Admin.query.all()))
+def list_admins():
+    data = serialize(Admin.query.all())
+    for item in data:
+        del item['password']
+    return jsonify(data)
 
 
 def insert_admin():
@@ -22,9 +25,18 @@ def insert_admin():
     return ""
 
 
-@bp.route('/', methods=['GET', 'PUT'])
+def delete_admins():
+    data = json.loads(request.get_data())
+    Admin.query.filter(Admin.id.in_(data)).delete()
+    db.session.commit()
+    return ""
+
+
+@bp.route('/', methods=['GET', 'PUT', 'DELETE'])
 def index():
     if request.method == 'GET':
-        return list_admin()
+        return list_admins()
     elif request.method == 'PUT':
         return insert_admin()
+    elif request.method == 'DELETE':
+        return delete_admins()

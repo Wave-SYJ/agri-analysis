@@ -7,22 +7,39 @@
           icon="el-icon-plus"
           size="medium"
           @click="insertDlgVisible = true"
+          :disabled="editingIndex != null"
         >
           添加
         </el-button>
-        <el-button type="danger" icon="el-icon-delete" size="medium">
+        <el-button
+          type="danger"
+          icon="el-icon-delete"
+          size="medium"
+          :disabled="selection.length == 0 || editingIndex != null"
+          @click="handleDeleteMany"
+        >
           删除
         </el-button>
       </div>
       <div class="page-header-right">
-        <el-button icon="el-icon-search" @click="handleStartSearch"
-          >搜索</el-button
+        <el-button
+          icon="el-icon-search"
+          @click="handleStartSearch"
+          :disabled="editingIndex != null"
         >
+          搜索
+        </el-button>
       </div>
     </div>
 
     <div class="page-main">
-      <el-table :data="currentData" :height="tableHeight" v-loading="loading">
+      <el-table
+        :data="currentData"
+        :height="tableHeight"
+        v-loading="loading"
+        @selection-change="(val) => (selection = val)"
+      >
+        <el-table-column type="selection" width="30"> </el-table-column>
         <template v-for="column in columns">
           // index
           <el-table-column
@@ -31,6 +48,7 @@
             type="index"
             width="50"
             align="right"
+            label="#"
           />
 
           // date
@@ -155,6 +173,7 @@
                 size="small"
                 type="danger"
                 icon="el-icon-delete"
+                @click="handleDeleteOne(scope.row.id)"
               >
                 删除
               </el-button>
@@ -289,7 +308,7 @@ export default {
   props: {
     tableData: Array,
     columns: Array,
-    loading: Boolean
+    loading: Boolean,
   },
   components: {
     NumberRangeInput,
@@ -301,6 +320,7 @@ export default {
       editingObj: {},
       currentPage: 1,
       documentHeight: document.documentElement.clientHeight,
+      selection: [],
 
       searchDrawerShow: false,
       searchObj: {},
@@ -311,12 +331,26 @@ export default {
     };
   },
   methods: {
+    handleDeleteMany() {
+      this.$confirm("此操作将删除所有选中项，是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => this.$emit("delete", this.selection.map(item => item.id)));
+    },
+    handleDeleteOne(id) {
+      this.$confirm("此操作将删除该项，是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => this.$emit("delete", id));
+    },
     handleInsertCancel() {
       this.insertDlgVisible = false;
       this.insertObj = {};
     },
     async handleInsertConfirm() {
-      this.$emit('insert', this.insertObj)
+      this.$emit("insert", this.insertObj);
       this.insertDlgVisible = false;
       this.insertObj = {};
     },
@@ -370,8 +404,9 @@ export default {
   watch: {
     tableData(val) {
       this.currentData = val;
-    }
-  }
+      this.selection = []
+    },
+  },
 };
 </script>
 

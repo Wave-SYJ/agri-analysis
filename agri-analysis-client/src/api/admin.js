@@ -15,3 +15,11 @@ export async function insertAdmin(data) {
     data
   })
 }
+
+export async function deleteAdmins(list) {
+  await request({
+    method: 'delete',
+    url: '/api/admin/',
+    data: list
+  })
+}
