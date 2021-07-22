@@ -2,7 +2,12 @@
   <div class="page-container">
     <div class="page-header">
       <div class="page-header-left">
-        <el-button type="success" icon="el-icon-plus" size="medium">
+        <el-button
+          type="success"
+          icon="el-icon-plus"
+          size="medium"
+          @click="insertDlgVisible = true"
+        >
           添加
         </el-button>
         <el-button type="danger" icon="el-icon-delete" size="medium">
@@ -17,7 +22,7 @@
     </div>
 
     <div class="page-main">
-      <el-table :data="currentData" :height="tableHeight">
+      <el-table :data="currentData" :height="tableHeight" v-loading="loading">
         <template v-for="column in columns">
           // index
           <el-table-column
@@ -159,6 +164,62 @@
       </el-table>
     </div>
 
+    <el-dialog title="新增" :visible.sync="insertDlgVisible">
+      <el-form :model="insertObj" label-width="80px">
+        <template v-for="column in columns">
+          <el-form-item
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+            v-if="column.type === 'text'"
+          >
+            <el-input v-model="insertObj[column.prop]" />
+          </el-form-item>
+
+          <el-form-item
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+            v-else-if="column.type === 'date'"
+          >
+            <el-date-picker v-model="insertObj[column.prop]" />
+          </el-form-item>
+
+          <el-form-item
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+            v-if="column.type === 'number'"
+          >
+            <InputNumber
+              :precision="column.precision"
+              :step="column.step"
+              v-model="insertObj[column.prop]"
+            />
+          </el-form-item>
+
+          <el-form-item
+            v-if="column.type === 'select'"
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+          >
+            <el-select v-model="insertObj[column.prop]" placeholder="请选择">
+              <el-option
+                v-for="option in column.options"
+                :key="option.value"
+                :label="option.title"
+                :value="option.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </template>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="handleInsertCancel">取 消</el-button>
+        <el-button type="primary" @click="handleInsertConfirm">
+          确 定
+        </el-button>
+      </div>
+    </el-dialog>
+
     <el-drawer
       title="高级搜索"
       :visible.sync="searchDrawerShow"
@@ -228,6 +289,7 @@ export default {
   props: {
     tableData: Array,
     columns: Array,
+    loading: Boolean
   },
   components: {
     NumberRangeInput,
@@ -243,9 +305,21 @@ export default {
       searchDrawerShow: false,
       searchObj: {},
       currentData: [],
+
+      insertDlgVisible: false,
+      insertObj: {},
     };
   },
   methods: {
+    handleInsertCancel() {
+      this.insertDlgVisible = false;
+      this.insertObj = {};
+    },
+    async handleInsertConfirm() {
+      this.$emit('insert', this.insertObj)
+      this.insertDlgVisible = false;
+      this.insertObj = {};
+    },
     handleStartEdit(index, obj) {
       this.editingIndex = index;
       this.editingObj = { ...obj };
@@ -293,6 +367,11 @@ export default {
   created() {
     this.searchObj = this.getSearchInitObj();
   },
+  watch: {
+    tableData(val) {
+      this.currentData = val;
+    }
+  }
 };
 </script>
 

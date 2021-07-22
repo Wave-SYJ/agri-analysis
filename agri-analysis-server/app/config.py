@@ -1,4 +1,5 @@
 import os
+from flask_cors import CORS
 
 
 class BaseConfig:  # 基本配置类
@@ -22,6 +23,7 @@ class DevelopmentConfig(BaseConfig):
     def init_app(cls, app):
         super().init_app(app)
         cls.SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app.root_path, '../db/data.sqlite')
+        CORS(app, supports_credentials=True)
 
 
 config = {

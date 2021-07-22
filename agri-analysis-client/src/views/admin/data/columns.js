@@ -24,7 +24,9 @@ export default [
     suffix: "元 / 公斤",
     prop: 'price',
     editable: true,
-    searchable: true
+    searchable: true,
+    precision: 2,
+    step: 0.1
   },
   {
     title: '市场',
