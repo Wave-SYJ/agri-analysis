@@ -1,5 +1,5 @@
-from .admin import bp as home_bp
+from .admin import bp as admin_bp
 
 
 def init_app(app):
-    app.register_blueprint(home_bp)
+    app.register_blueprint(admin_bp)
