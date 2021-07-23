@@ -4,7 +4,7 @@ import scrapy
 
 
 class MofcomSpider(scrapy.Spider):
-    name = 'mofcom'
+    name = 'product'
     allowed_domains = ['nc.mofcom.gov.cn']
 
     def start_requests(self):
