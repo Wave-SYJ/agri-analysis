@@ -324,7 +324,7 @@ export default {
       pagination: {
         pageNo: 1,
         pageSize: 100,
-        total: 400
+        total: 0
       },
       documentHeight: document.documentElement.clientHeight,
       selection: [],
@@ -431,7 +431,6 @@ export default {
         ...this.pagination,
         total: val
       }
-      console.log(this.pagination)
     }
   },
 };
