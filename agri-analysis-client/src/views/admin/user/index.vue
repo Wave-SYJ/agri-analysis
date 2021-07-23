@@ -1,5 +1,5 @@
 <template>
-  <DataTable :tableData="tableData" :columns="columns" @insert="handleInsert" :loading="!!loading" @delete="handleDelete" @update="handleUpdate" />
+  <DataTable :tableData="tableData" :totalItems="totalItmes" :columns="columns" @insert="handleInsert" :loading="!!loading" @delete="handleDelete" @update="handleUpdate" @refresh="handleRefresh" />
 </template>
 
 <script>
@@ -15,37 +15,39 @@ export default {
     return {
       tableData: [],
       columns,
-      loading: 0
+      loading: 0,
+      totalItmes: 0,
+      pagination: {}
     }
   },
   methods: {
-    async refreshDataList() {
+    async handleRefresh(pagination) {
       this.loading++;
-      this.tableData = await getAdminList();
+      const res = await getAdminList(pagination.pageNo, pagination.pageSize);
+      this.pagination = pagination
+      this.tableData = res.list;
+      this.totalItmes = res.total;
       this.loading--;
     },
     async handleInsert(data) {
       this.loading++;
       await insertAdmin(data)
-      this.refreshDataList();
+      this.handleRefresh(this.pagination);
       this.loading--;
     },
     async handleDelete(list) {
       this.loading++;
       await deleteAdmins(list);
-      this.refreshDataList();
+      this.handleRefresh(this.pagination);
       this.loading--;
     },
     async handleUpdate(data) {
       this.loading++;
       await updateAdmin(data);
-      this.refreshDataList();
+      this.handleRefresh(this.pagination);
       this.loading--;
     }
   },
-  created() {
-    this.refreshDataList()
-  }
 }
 </script>
 

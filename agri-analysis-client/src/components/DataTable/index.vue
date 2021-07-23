@@ -289,11 +289,13 @@
     <div class="page-footer">
       <el-pagination
         class="page-footer-pagination"
-        :current-page="currentPage"
+        :current-page="pagination.pageNo"
         :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :page-size="pagination.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="pagination.total"
+        @current-change="currentPage => handlePaginationChange({ pageNo: currentPage })"
+        @size-change="currentSize => handlePaginationChange({ pageSize: currentSize })"
       >
       </el-pagination>
     </div>
@@ -309,6 +311,7 @@ export default {
     tableData: Array,
     columns: Array,
     loading: Boolean,
+    totalItems: Number
   },
   components: {
     NumberRangeInput,
@@ -318,7 +321,11 @@ export default {
       dayjs,
       editingIndex: null,
       editingObj: {},
-      currentPage: 1,
+      pagination: {
+        pageNo: 1,
+        pageSize: 100,
+        total: 400
+      },
       documentHeight: document.documentElement.clientHeight,
       selection: [],
 
@@ -370,6 +377,13 @@ export default {
     handleStartSearch() {
       this.searchDrawerShow = true;
     },
+    handlePaginationChange(currentPagination) {
+      this.pagination = {
+        ...this.pagination,
+        ...currentPagination
+      }
+      this.$emit("refresh", this.pagination)
+    },
     getSearchInitObj() {
       const result = {};
       this.columns
@@ -405,12 +419,20 @@ export default {
   },
   created() {
     this.searchObj = this.getSearchInitObj();
+    this.$emit("refresh", this.pagination)
   },
   watch: {
     tableData(val) {
       this.currentData = val;
       this.selection = []
     },
+    totalItems(val) {
+      this.pagination = {
+        ...this.pagination,
+        total: val
+      }
+      console.log(this.pagination)
+    }
   },
 };
 </script>

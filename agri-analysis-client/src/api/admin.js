@@ -1,9 +1,9 @@
 import request from '@/utils/request';
 
-export async function getAdminList() {
+export async function getAdminList(pageNo, pageSize) {
   const { data } = await request({
     method: 'get',
-    url: '/api/admin/'
+    url: `/api/admin/?pageNo=${pageNo}&pageSize=${pageSize}`
   });
   return data;
 }

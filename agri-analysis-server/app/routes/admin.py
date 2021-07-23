@@ -11,10 +11,19 @@ bp = Blueprint('admin_bp', __name__, url_prefix='/admin')
 
 
 def list_admins():
-    data = serialize(Admin.query.all())
-    for item in data:
+    page_no = request.args.get('pageNo', 1, type=int)
+    page_size = request.args.get('pageSize', 10, type=int)
+    pagination = Admin.query.paginate(page_no, per_page=page_size, error_out=False)
+    items = serialize(pagination.items)
+    for item in items:
         del item['password']
-    return jsonify(data)
+    return jsonify({
+        "pageCount": pagination.pages,
+        "pageNo": pagination.page,
+        "pageSize": pagination.per_page,
+        "total": pagination.total,
+        "list": items
+    })
 
 
 def insert_admin():
