@@ -355,7 +355,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      }).then(() => this.$emit("delete", id));
+      }).then(() => this.$emit("delete", [id]));
     },
     handleInsertCancel() {
       this.insertDlgVisible = false;

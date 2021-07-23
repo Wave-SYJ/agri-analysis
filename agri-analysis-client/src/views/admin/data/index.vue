@@ -7,6 +7,8 @@ import DataTable from "@/components/DataTable"
 import tableData from './fakeData'
 import columns from './columns'
 
+import { getProductList } from "@/api/product"
+
 export default {
   components: {
     DataTable
@@ -16,6 +18,9 @@ export default {
       tableData,
       columns
     }
+  },
+  async created() {
+    console.log(await getProductList())
   }
 }
 </script>

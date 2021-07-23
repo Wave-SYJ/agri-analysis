@@ -1,5 +1,7 @@
 import os
 from flask_cors import CORS
+from sqlalchemy.engine import URL
+import yaml
 
 
 class BaseConfig:  # 基本配置类
@@ -22,7 +24,13 @@ class DevelopmentConfig(BaseConfig):
     @classmethod
     def init_app(cls, app):
         super().init_app(app)
-        cls.SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app.root_path, '../db/data.sqlite')
+        mysql_config = yaml.load(open('app/config/database.secret.yml'),
+                                 Loader=yaml.SafeLoader)['development']['database']
+
+        cls.SQLALCHEMY_DATABASE_URI = URL(drivername=mysql_config['drivername'], username=mysql_config['username'],
+                                          password=mysql_config['password'],
+                                          host=mysql_config['host'], port=mysql_config['port'],
+                                          database=mysql_config['database'])
         CORS(app, supports_credentials=True)
 
 

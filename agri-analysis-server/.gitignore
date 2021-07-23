@@ -140,3 +140,4 @@ cython_debug/
 .idea/
 db/
 !db/.gitkeep
+app/config/database.secret.yml

@@ -3,6 +3,8 @@ from . import gen_id
 
 
 class Admin(db.Model):
+    __tablename__ = 't_admin'
+
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     username = db.Column(db.String(32), nullable=False)
     password = db.Column(db.String(102), nullable=False)

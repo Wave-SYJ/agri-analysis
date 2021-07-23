@@ -1,11 +1,14 @@
 from . import db
 from . import gen_id
+from .type import Type
 
 
-class Type(db.Model):
+class Variety(db.Model):
+    __tablename__ = 't_variety'
+
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
-    type_id = db.Column(db.String(32), db.ForeignKey("type.id"), nullable=False)
+    type_id = db.Column(db.String(32), db.ForeignKey(Type.id), nullable=False)
 
     products = db.relationship("Product", backref="varieties", lazy="dynamic")
 
