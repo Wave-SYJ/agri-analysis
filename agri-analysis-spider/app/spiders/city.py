@@ -2,18 +2,47 @@ import json
 
 import scrapy
 import yaml
+import pymysql
+import uuid
 
 
 class MySQLPipeline:
     def __init__(self):
         mysql_config = yaml.load(open('app/config/database.secret.yml'),
                                  Loader=yaml.SafeLoader)['development']['database']
+        self.connect = pymysql.connect(
+            host=mysql_config['host'],
+            port=mysql_config['port'],
+            user=mysql_config['username'],
+            password=mysql_config['password'],
+            database=mysql_config['database'],
+            charset='utf8'
+        )
+
+        self.cursor = self.connect.cursor()
 
     def process_item(self, item, spider):
-        print(item)
+        try:
+            province_id = uuid.uuid4().hex
+            self.cursor.execute(
+                'INSERT t_province(id, name, origin_index, full_name) VALUE (%s, %s, %s, %s)',
+                (province_id, item['S_NAME'], item['P_INDEX'], item['P_NAME'])
+            )
 
-    def close_spider(self):
-        pass
+            self.cursor.executemany(
+                'INSERT t_city(id, name, province_id, origin_index, full_name) VALUES (%s, %s, %s, %s, %s)',
+                tuple((uuid.uuid4().hex, city['S_NAME'], province_id, city['P_INDEX'], city['P_NAME'])
+                      for city in item['CITIES'])
+            )
+
+            self.connect.commit()
+        except Exception as e:
+            print(e)
+            self.connect.rollback()
+
+    def close_spider(self, spider):
+        self.cursor.close()
+        self.connect.close()
 
 
 class MofcomSpider(scrapy.Spider):

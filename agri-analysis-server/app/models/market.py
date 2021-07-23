@@ -9,7 +9,10 @@ class Market(db.Model):
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     city_id = db.Column(db.String(32), db.ForeignKey(City.id), nullable=True)
     name = db.Column(db.String(32), nullable=False)
+    address = db.Column(db.String(64), nullable=True)
+    picture_url = db.Column(db.String(64), nullable=True)
     details = db.Column(db.Text, nullable=True)
+    origin_id = db.Column(db.Integer, nullable=True)
 
     products = db.relationship("Product", backref="market", lazy="dynamic")
 

@@ -1,11 +1,56 @@
 import json
+import traceback
 
 import scrapy
+import yaml
+import pymysql
+import uuid
+
+
+class MySQLPipeline:
+    def __init__(self):
+        mysql_config = yaml.load(open('app/config/database.secret.yml'),
+                                 Loader=yaml.SafeLoader)['development']['database']
+        self.connect = pymysql.connect(
+            host=mysql_config['host'],
+            port=mysql_config['port'],
+            user=mysql_config['username'],
+            password=mysql_config['password'],
+            database=mysql_config['database'],
+            charset='utf8'
+        )
+
+        self.cursor = self.connect.cursor()
+
+    def process_item(self, item, spider):
+        market = item['market']
+        city = item['city']
+        try:
+            self.cursor.execute(
+                'INSERT t_market(id, city_id, name, address, picture_url, details, origin_id) '
+                'SELECT %s, t_city.id, %s, %s, %s, %s, %s FROM t_city WHERE t_city.origin_index = %s',
+                (uuid.uuid4().hex, market.get('EUD_NAME', None), market.get('ADDR', None),
+                 market.get('EUD_PIC', None), market.get('CONTENT', None), market.get('ID', None), city.get('P_INDEX', None))
+            )
+            self.connect.commit()
+        except Exception as e:
+            print(e)
+            self.connect.rollback()
+
+    def close_spider(self, spider):
+        self.cursor.close()
+        self.connect.close()
 
 
 class MofcomSpider(scrapy.Spider):
     name = 'market'
     allowed_domains = ['nc.mofcom.gov.cn']
+
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'app.spiders.market.MySQLPipeline': 300
+        }
+    }
 
     def start_requests(self):
         return [
