@@ -1,6 +1,6 @@
 import json
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, abort
 from werkzeug.security import generate_password_hash
 
 from app.models import db
@@ -32,7 +32,14 @@ def delete_admins():
     return ""
 
 
-@bp.route('/', methods=['GET', 'PUT', 'DELETE'])
+def modify_admin():
+    data = json.loads(request.get_data())
+    Admin.query.filter_by(id=data["id"]).update(data)
+    db.session.commit()
+    return ""
+
+
+@bp.route('/', methods=['GET', 'PUT', 'DELETE', 'POST'])
 def index():
     if request.method == 'GET':
         return list_admins()
@@ -40,3 +47,7 @@ def index():
         return insert_admin()
     elif request.method == 'DELETE':
         return delete_admins()
+    elif request.method == 'POST':
+        return modify_admin()
+    else:
+        abort(404)

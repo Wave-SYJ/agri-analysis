@@ -23,3 +23,11 @@ export async function deleteAdmins(list) {
     data: list
   })
 }
+
+export async function updateAdmin(data) {
+  await request({
+    method: 'post',
+    url: '/api/admin/',
+    data
+  })
+}

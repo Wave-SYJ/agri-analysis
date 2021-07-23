@@ -155,7 +155,7 @@
                 编辑
               </el-button>
               <template v-else>
-                <el-button size="small" type="primary" icon="el-icon-check">
+                <el-button size="small" type="primary" icon="el-icon-check" @click="handleConfirmEdit">
                   确定
                 </el-button>
                 <el-button
@@ -331,6 +331,11 @@ export default {
     };
   },
   methods: {
+    handleConfirmEdit() {
+      this.$emit("update", this.editingObj);
+      this.editingIndex = null;
+      this.editingObj = {};
+    },
     handleDeleteMany() {
       this.$confirm("此操作将删除所有选中项，是否继续?", "提示", {
         confirmButtonText: "确定",

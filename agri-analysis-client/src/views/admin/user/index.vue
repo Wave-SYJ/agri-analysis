@@ -1,10 +1,10 @@
 <template>
-  <DataTable :tableData="tableData" :columns="columns" @insert="handleInsert" :loading="!!loading" @delete="handleDelete" />
+  <DataTable :tableData="tableData" :columns="columns" @insert="handleInsert" :loading="!!loading" @delete="handleDelete" @update="handleUpdate" />
 </template>
 
 <script>
 import DataTable from "@/components/DataTable"
-import { getAdminList, insertAdmin, deleteAdmins } from '@/api/admin'
+import { getAdminList, insertAdmin, deleteAdmins, updateAdmin } from '@/api/admin'
 import columns from './columns'
 
 export default {
@@ -33,6 +33,12 @@ export default {
     async handleDelete(list) {
       this.loading++;
       await deleteAdmins(list);
+      this.refreshDataList();
+      this.loading--;
+    },
+    async handleUpdate(data) {
+      this.loading++;
+      await updateAdmin(data);
       this.refreshDataList();
       this.loading--;
     }
