@@ -1,0 +1,1 @@
+scrapy crawl city & scrapy crawl market & scrapy crawl variety

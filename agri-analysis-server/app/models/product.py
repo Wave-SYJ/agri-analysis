@@ -8,7 +8,6 @@ class Product(db.Model):
     __tablename__ = 't_product'
 
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
-    name = db.Column(db.String(64), nullable=False)
     variety_id = db.Column(db.String(32), db.ForeignKey(Variety.id), nullable=True)
     market_id = db.Column(db.String(32), db.ForeignKey(Market.id), nullable=True)
     price = db.Column(db.Float, nullable=True)

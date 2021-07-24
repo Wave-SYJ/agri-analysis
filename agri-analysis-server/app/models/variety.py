@@ -9,6 +9,7 @@ class Variety(db.Model):
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
     type_id = db.Column(db.String(32), db.ForeignKey(Type.id), nullable=False)
+    origin_code = db.Column(db.Integer, nullable=False)
 
     products = db.relationship("Product", backref="varieties", lazy="dynamic")
 

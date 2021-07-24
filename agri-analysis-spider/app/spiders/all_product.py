@@ -5,23 +5,17 @@ import requests
 
 
 class MofcomSpider(scrapy.Spider):
-    name = 'product'
+    name = 'all_product'
     allowed_domains = ['nc.mofcom.gov.cn']
 
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'app.pipelines.ProductPipeline': 300
-        }
-    }
-
-    def __init__(self, date=None, **kwargs):
+    def __init__(self, end=None, **kwargs):
         super().__init__(**kwargs)
-        self.date = date
+        self.end_date = end
 
     def start_requests(self):
-        print("爬取日期：", self.date)
+        print("截止日期：", self.end_date)
         res = requests.post(url="http://nc.mofcom.gov.cn/jghq/priceList",
-                            data=f"queryDateType=4&timeRange={self.date}+~+{self.date}",
+                            data=f"queryDateType=4&timeRange=2021-05-24+~+{self.end_date}",
                             headers={
                                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
                             })
@@ -29,7 +23,7 @@ class MofcomSpider(scrapy.Spider):
 
         return [
             scrapy.Request("http://nc.mofcom.gov.cn/jghq/priceList", method="POST",
-                           body=f"queryDateType=4&timeRange={self.date}+~+{self.date}&pageNo=" + str(page),
+                           body=f"queryDateType=4&timeRange=2021-05-24+~+{self.end_date}&pageNo=" + str(page),
                            headers={
                                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
                            })
