@@ -10,8 +10,6 @@ class Province(db.Model):
     origin_index = db.Column(db.Integer, nullable=True)
     full_name = db.Column(db.String(32), nullable=True)
 
-    cities = db.relationship("City", backref="province", lazy="dynamic")
-
     def __init__(self):
         pass
 

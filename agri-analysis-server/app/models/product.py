@@ -1,7 +1,9 @@
+from sqlalchemy.orm import backref
+
 from . import db
 from . import gen_id
-from .variety import Variety
 from .market import Market
+from .variety import Variety
 
 
 class Product(db.Model):
@@ -12,6 +14,9 @@ class Product(db.Model):
     market_id = db.Column(db.String(32), db.ForeignKey(Market.id), nullable=True)
     price = db.Column(db.Float, nullable=True)
     date = db.Column(db.Date, nullable=True)
+
+    market = db.relationship("Market", backref=backref(name="products", lazy="dynamic"))
+    variety = db.relationship("Variety", backref=backref(name="products", lazy="dynamic"))
 
     def __init__(self):
         pass

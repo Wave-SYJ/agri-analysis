@@ -1,3 +1,5 @@
+from sqlalchemy.orm import backref
+
 from . import db
 from . import gen_id
 from .city import City
@@ -14,7 +16,7 @@ class Market(db.Model):
     details = db.Column(db.Text, nullable=True)
     origin_id = db.Column(db.Integer, nullable=True)
 
-    products = db.relationship("Product", backref="market", lazy="dynamic")
+    city = db.relationship("City", backref=backref(name="markets", lazy="dynamic"))
 
     def __init__(self):
         pass

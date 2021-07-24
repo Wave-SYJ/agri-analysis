@@ -1,3 +1,5 @@
+from sqlalchemy.orm import backref
+
 from . import db
 from . import gen_id
 from .type import Type
@@ -11,7 +13,7 @@ class Variety(db.Model):
     type_id = db.Column(db.String(32), db.ForeignKey(Type.id), nullable=False)
     origin_code = db.Column(db.Integer, nullable=False)
 
-    products = db.relationship("Product", backref="varieties", lazy="dynamic")
+    type = db.relationship("Type", backref=backref(name="varieties", lazy="dynamic"))
 
     def __init__(self):
         pass
