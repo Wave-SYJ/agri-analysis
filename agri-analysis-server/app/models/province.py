@@ -1,8 +1,9 @@
 from . import db
 from . import gen_id
+from sqlalchemy_serializer import SerializerMixin
 
 
-class Province(db.Model):
+class Province(db.Model, SerializerMixin):
     __tablename__ = 't_province'
 
     id = db.Column(db.String(32), default=gen_id, primary_key=True)

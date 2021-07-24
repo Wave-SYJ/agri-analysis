@@ -4,10 +4,12 @@ from . import db
 from . import gen_id
 from .market import Market
 from .variety import Variety
+from sqlalchemy_serializer import SerializerMixin
 
 
-class Product(db.Model):
+class Product(db.Model, SerializerMixin):
     __tablename__ = 't_product'
+    serialize_rules = ('-market.products', '-variety.products')
 
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     variety_id = db.Column(db.String(32), db.ForeignKey(Variety.id), nullable=True)

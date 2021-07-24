@@ -84,6 +84,20 @@
             </template>
           </el-table-column>
 
+          // cascade
+          <el-table-column
+            v-if="column.type === 'cascade'"
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+          >
+            <template v-slot="scope">
+              <span v-if="editingIndex !== scope.$index || !column.editable">
+                {{ column.formatFuns[0](scope.row[column.prop]).title }}
+              </span>
+              <el-input v-else v-model="editingObj[column.prop]" />
+            </template>
+          </el-table-column>
+
           // number
           <el-table-column
             v-if="column.type === 'number'"
@@ -290,7 +304,7 @@
       <el-pagination
         class="page-footer-pagination"
         :current-page="pagination.pageNo"
-        :page-sizes="[100, 200, 300, 400]"
+        :page-sizes="[25, 50, 100, 200, 300, 400]"
         :page-size="pagination.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="pagination.total"
@@ -323,7 +337,7 @@ export default {
       editingObj: {},
       pagination: {
         pageNo: 1,
-        pageSize: 100,
+        pageSize: 25,
         total: 0
       },
       documentHeight: document.documentElement.clientHeight,

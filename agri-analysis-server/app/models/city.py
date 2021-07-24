@@ -3,10 +3,12 @@ from sqlalchemy.orm import backref
 from . import db
 from . import gen_id
 from .province import Province
+from sqlalchemy_serializer import SerializerMixin
 
 
-class City(db.Model):
+class City(db.Model, SerializerMixin):
     __tablename__ = 't_city'
+    serialize_rules = ('-province.cities',)
 
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     name = db.Column(db.String(32), nullable=False)

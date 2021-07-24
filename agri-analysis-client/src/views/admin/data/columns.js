@@ -1,3 +1,10 @@
+function formatFun(item) {
+  return {
+    title: item.name,
+    value: item.id
+  }
+}
+
 export default [
   {
     title: '#',
@@ -12,11 +19,12 @@ export default [
     searchable: true
   },
   {
-    title: '产品',
-    type: 'text',
-    prop: 'product',
+    title: '品种',
+    type: 'cascade',
+    prop: 'variety',
     editable: true,
-    searchable: true
+    searchable: true,
+    formatFuns: [formatFun, formatFun]
   },
   {
     title: '价格',
@@ -30,10 +38,11 @@ export default [
   },
   {
     title: '市场',
-    type: 'text',
+    type: 'cascade',
     prop: 'market',
     editable: true,
-    searchable: true
+    searchable: true,
+    formatFuns: [formatFun, formatFun, formatFun]
   },
   {
     title: '操作',

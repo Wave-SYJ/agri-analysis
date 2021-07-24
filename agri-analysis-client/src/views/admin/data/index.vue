@@ -1,13 +1,11 @@
 <template>
-  <DataTable :tableData="tableData" :columns="columns" />
+  <DataTable :tableData="tableData" :totalItems="totalItmes" :columns="columns" @insert="handleInsert" :loading="!!loading" @delete="handleDelete" @update="handleUpdate" @refresh="handleRefresh" />
 </template>
 
 <script>
 import DataTable from "@/components/DataTable"
-import tableData from './fakeData'
+import { getProductList, insertProduct, deleteProducts, updateProduct } from '@/api/product'
 import columns from './columns'
-
-import { getProductList } from "@/api/product"
 
 export default {
   components: {
@@ -15,13 +13,41 @@ export default {
   },
   data() {
     return {
-      tableData,
-      columns
+      tableData: [],
+      columns,
+      loading: 0,
+      totalItmes: 0,
+      pagination: {}
     }
   },
-  async created() {
-    console.log(await getProductList())
-  }
+  methods: {
+    async handleRefresh(pagination) {
+      this.loading++;
+      const res = await getProductList(pagination.pageNo, pagination.pageSize);
+      this.pagination = pagination
+      this.tableData = res.list;
+      this.totalItmes = res.total;
+      this.loading--;
+    },
+    async handleInsert(data) {
+      this.loading++;
+      await insertProduct(data)
+      this.handleRefresh(this.pagination);
+      this.loading--;
+    },
+    async handleDelete(list) {
+      this.loading++;
+      await deleteProducts(list);
+      this.handleRefresh(this.pagination);
+      this.loading--;
+    },
+    async handleUpdate(data) {
+      this.loading++;
+      await updateProduct(data);
+      this.handleRefresh(this.pagination);
+      this.loading--;
+    }
+  },
 }
 </script>
 

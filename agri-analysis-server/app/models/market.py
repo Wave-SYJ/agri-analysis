@@ -3,10 +3,12 @@ from sqlalchemy.orm import backref
 from . import db
 from . import gen_id
 from .city import City
+from sqlalchemy_serializer import SerializerMixin
 
 
-class Market(db.Model):
+class Market(db.Model, SerializerMixin):
     __tablename__ = 't_market'
+    serialize_rules = ('-city.markets',)
 
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     city_id = db.Column(db.String(32), db.ForeignKey(City.id), nullable=True)

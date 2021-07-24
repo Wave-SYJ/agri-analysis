@@ -1,8 +1,9 @@
 from . import db
 from . import gen_id
+from sqlalchemy_serializer import SerializerMixin
 
 
-class Admin(db.Model):
+class Admin(db.Model, SerializerMixin):
     __tablename__ = 't_admin'
 
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
