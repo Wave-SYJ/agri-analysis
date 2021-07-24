@@ -140,3 +140,4 @@ cython_debug/
 .idea/
 result.json
 app/config/database.secret.yml
+nohup.out
