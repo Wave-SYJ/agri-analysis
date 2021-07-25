@@ -92,19 +92,27 @@
           >
             <template v-slot="scope">
               <span v-if="editingIndex !== scope.$index || !column.editable">
-                {{ column.formatFuns[column.degree - 1](scope.row[column.prop]).title }}
+                {{
+                  column.formatFuns[column.degree - 1](scope.row[column.prop])
+                    .title
+                }}
               </span>
               <el-cascader
                 v-else
                 :value="column.getValuesFun(editingObj[column.prop])"
-                @change="v => column.handleChangeFun(editingObj, v[column.degree - 1])"
+                @change="
+                  (v) =>
+                    column.handleChangeFun(editingObj, v[column.degree - 1])
+                "
                 :props="{
                   lazy: true,
                   lazyLoad(node, resolve) {
-                    column.getOptionsFuns[node.level](node.value).then(res => resolve(res))
+                    column.getOptionsFuns[node.level](node.value).then((res) =>
+                      resolve(res)
+                    );
                   },
                 }"
-              ></el-cascader>
+              />
             </template>
           </el-table-column>
 
@@ -236,11 +244,13 @@
             :label="column.title"
             v-if="column.type === 'number'"
           >
-            <InputNumber
+            <el-input-number
+              style="margin-right: 10px"
               :precision="column.precision"
               :step="column.step"
               v-model="insertObj[column.prop]"
             />
+            {{ column.suffix }}
           </el-form-item>
 
           <el-form-item
@@ -257,6 +267,27 @@
               >
               </el-option>
             </el-select>
+          </el-form-item>
+
+          <el-form-item
+            v-if="column.type === 'cascade'"
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+          >
+            <el-cascader
+              :value="column.getValuesFun(insertObj[column.prop])"
+              @change="
+                (v) => column.handleChangeFun(insertObj, v[column.degree - 1])
+              "
+              :props="{
+                lazy: true,
+                lazyLoad(node, resolve) {
+                  column.getOptionsFuns[node.level](node.value).then((res) =>
+                    resolve(res)
+                  );
+                },
+              }"
+            />
           </el-form-item>
         </template>
       </el-form>

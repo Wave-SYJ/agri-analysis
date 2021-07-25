@@ -32,7 +32,7 @@ export default [
       async () => (await getTypeList()).map((item) => ({ label: item.name, value: item.id, leaf: false })),
       async (typeId) => (await getVarietyList(typeId)).map((item) => ({ label: item.name, value: item.id, leaf: true }))
     ],
-    getValuesFun: (item) => [item.type.id, item.id],
+    getValuesFun: (item) => item ? [item.type.id, item.id] : [null, null],
     handleChangeFun: async (editingObj, newId) => {
       editingObj.variety_id = newId;
       editingObj.variety = await getVariety(newId);
@@ -61,7 +61,7 @@ export default [
       async (provinceId) => (await getCityList(provinceId)).map((item) => ({ label: item.name, value: item.id, leaf: false })),
       async (cityId) => (await getMarketList(cityId)).map((item) => ({ label: item.name, value: item.id, leaf: true }))
     ],
-    getValuesFun: (item) => [item.city.province.id, item.city.id, item.id],
+    getValuesFun: (item) => item ? [item.city.province.id, item.city.id, item.id] : [null, null],
     handleChangeFun: async (editingObj, newId) => {
       editingObj.market_id = newId;
       editingObj.market = await getMarket(newId);
