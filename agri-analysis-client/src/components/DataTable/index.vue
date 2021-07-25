@@ -92,9 +92,19 @@
           >
             <template v-slot="scope">
               <span v-if="editingIndex !== scope.$index || !column.editable">
-                {{ column.formatFuns[0](scope.row[column.prop]).title }}
+                {{ column.formatFuns[column.degree - 1](scope.row[column.prop]).title }}
               </span>
-              <el-input v-else v-model="editingObj[column.prop]" />
+              <el-cascader
+                v-else
+                :value="column.getValuesFun(editingObj[column.prop])"
+                @change="v => column.handleChangeFun(editingObj, v[column.degree - 1])"
+                :props="{
+                  lazy: true,
+                  lazyLoad(node, resolve) {
+                    column.getOptionsFuns[node.level](node.value).then(res => resolve(res))
+                  },
+                }"
+              ></el-cascader>
             </template>
           </el-table-column>
 
@@ -169,7 +179,12 @@
                 编辑
               </el-button>
               <template v-else>
-                <el-button size="small" type="primary" icon="el-icon-check" @click="handleConfirmEdit">
+                <el-button
+                  size="small"
+                  type="primary"
+                  icon="el-icon-check"
+                  @click="handleConfirmEdit"
+                >
                   确定
                 </el-button>
                 <el-button
@@ -308,8 +323,12 @@
         :page-size="pagination.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="pagination.total"
-        @current-change="currentPage => handlePaginationChange({ pageNo: currentPage })"
-        @size-change="currentSize => handlePaginationChange({ pageSize: currentSize })"
+        @current-change="
+          (currentPage) => handlePaginationChange({ pageNo: currentPage })
+        "
+        @size-change="
+          (currentSize) => handlePaginationChange({ pageSize: currentSize })
+        "
       >
       </el-pagination>
     </div>
@@ -325,20 +344,21 @@ export default {
     tableData: Array,
     columns: Array,
     loading: Boolean,
-    totalItems: Number
+    totalItems: Number,
   },
   components: {
     NumberRangeInput,
   },
   data() {
     return {
+      console,
       dayjs,
       editingIndex: null,
       editingObj: {},
       pagination: {
         pageNo: 1,
         pageSize: 25,
-        total: 0
+        total: 0,
       },
       documentHeight: document.documentElement.clientHeight,
       selection: [],
@@ -362,7 +382,12 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      }).then(() => this.$emit("delete", this.selection.map(item => item.id)));
+      }).then(() =>
+        this.$emit(
+          "delete",
+          this.selection.map((item) => item.id)
+        )
+      );
     },
     handleDeleteOne(id) {
       this.$confirm("此操作将删除该项，是否继续?", "提示", {
@@ -394,9 +419,9 @@ export default {
     handlePaginationChange(currentPagination) {
       this.pagination = {
         ...this.pagination,
-        ...currentPagination
-      }
-      this.$emit("refresh", this.pagination)
+        ...currentPagination,
+      };
+      this.$emit("refresh", this.pagination);
     },
     getSearchInitObj() {
       const result = {};
@@ -433,19 +458,19 @@ export default {
   },
   created() {
     this.searchObj = this.getSearchInitObj();
-    this.$emit("refresh", this.pagination)
+    this.$emit("refresh", this.pagination);
   },
   watch: {
     tableData(val) {
       this.currentData = val;
-      this.selection = []
+      this.selection = [];
     },
     totalItems(val) {
       this.pagination = {
         ...this.pagination,
-        total: val
-      }
-    }
+        total: val,
+      };
+    },
   },
 };
 </script>

@@ -47,7 +47,7 @@ export default {
       this.handleRefresh(this.pagination);
       this.loading--;
     }
-  },
+  }
 }
 </script>
 

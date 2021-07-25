@@ -3,7 +3,7 @@ import request from '@/utils/request';
 export async function getProductList(pageNo, pageSize) {
   const { data } = await request({
     method: 'get',
-    url: `/api/product/?pageNo=${pageNo}&pageSize=${pageSize}`
+    url: `/api/product?pageNo=${pageNo}&pageSize=${pageSize}`
   });
   return data;
 }
@@ -11,7 +11,7 @@ export async function getProductList(pageNo, pageSize) {
 export async function insertProduct(data) {
   await request({
     method: 'put',
-    url: '/api/product/',
+    url: '/api/product',
     data
   })
 }
@@ -19,7 +19,7 @@ export async function insertProduct(data) {
 export async function deleteProducts(list) {
   await request({
     method: 'delete',
-    url: '/api/product/',
+    url: '/api/product',
     data: list
   })
 }
@@ -27,7 +27,7 @@ export async function deleteProducts(list) {
 export async function updateProduct(data) {
   await request({
     method: 'post',
-    url: '/api/product/',
+    url: '/api/product',
     data
   })
 }

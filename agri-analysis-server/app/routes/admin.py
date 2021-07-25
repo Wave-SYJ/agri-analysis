@@ -7,7 +7,7 @@ from app.models import db
 from app.models.admin import Admin
 from app.utils.serialize import serialize
 
-bp = Blueprint('admin_bp', __name__, url_prefix='/admin')
+bp = Blueprint('admin_bp', __name__, url_prefix='/')
 
 
 def list_admins():
@@ -48,7 +48,7 @@ def modify_admin():
     return ""
 
 
-@bp.route('/', methods=['GET', 'PUT', 'DELETE', 'POST'])
+@bp.route('/admin', methods=['GET', 'PUT', 'DELETE', 'POST'])
 def index():
     if request.method == 'GET':
         return list_admins()

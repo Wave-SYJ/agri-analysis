@@ -9,7 +9,6 @@ from sqlalchemy_serializer import SerializerMixin
 
 class Product(db.Model, SerializerMixin):
     __tablename__ = 't_product'
-    serialize_rules = ('-market.products', '-variety.products')
 
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     variety_id = db.Column(db.String(32), db.ForeignKey(Variety.id), nullable=True)
@@ -17,8 +16,8 @@ class Product(db.Model, SerializerMixin):
     price = db.Column(db.Float, nullable=True)
     date = db.Column(db.Date, nullable=True)
 
-    market = db.relationship("Market", backref=backref(name="products", lazy="dynamic"))
-    variety = db.relationship("Variety", backref=backref(name="products", lazy="dynamic"))
+    market = db.relationship("Market")
+    variety = db.relationship("Variety")
 
     def __init__(self):
         pass

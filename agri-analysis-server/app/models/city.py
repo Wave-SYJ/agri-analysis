@@ -8,7 +8,6 @@ from sqlalchemy_serializer import SerializerMixin
 
 class City(db.Model, SerializerMixin):
     __tablename__ = 't_city'
-    serialize_rules = ('-province.cities',)
 
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
@@ -16,7 +15,7 @@ class City(db.Model, SerializerMixin):
     origin_index = db.Column(db.Integer, nullable=True)
     full_name = db.Column(db.String(32), nullable=True)
 
-    province = db.relationship("Province", backref=backref(name="cities", lazy="dynamic"))
+    province = db.relationship("Province")
 
     def __init__(self):
         pass

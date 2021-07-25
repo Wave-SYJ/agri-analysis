@@ -8,7 +8,6 @@ from sqlalchemy_serializer import SerializerMixin
 
 class Market(db.Model, SerializerMixin):
     __tablename__ = 't_market'
-    serialize_rules = ('-city.markets',)
 
     id = db.Column(db.String(32), default=gen_id, primary_key=True)
     city_id = db.Column(db.String(32), db.ForeignKey(City.id), nullable=True)
@@ -18,7 +17,7 @@ class Market(db.Model, SerializerMixin):
     details = db.Column(db.Text, nullable=True)
     origin_id = db.Column(db.Integer, nullable=True)
 
-    city = db.relationship("City", backref=backref(name="markets", lazy="dynamic"))
+    city = db.relationship("City")
 
     def __init__(self):
         pass

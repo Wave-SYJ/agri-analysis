@@ -7,7 +7,7 @@ from app.models import db
 from app.models.product import Product
 from app.utils.serialize import serialize
 
-bp = Blueprint('product_bp', __name__, url_prefix='/product')
+bp = Blueprint('product_bp', __name__, url_prefix='/')
 
 
 def list_products():
@@ -40,12 +40,18 @@ def delete_products():
 
 def modify_product():
     data = json.loads(request.get_data())
-    Product.query.filter_by(id=data["id"]).update(data)
+    Product.query.filter_by(id=data["id"]).update({
+        'id': data['id'],
+        'variety_id': data['variety_id'],
+        'market_id': data['market_id'],
+        'price': data['price'],
+        'date': data['date']
+    })
     db.session.commit()
     return ""
 
 
-@bp.route('/', methods=['GET', 'PUT', 'DELETE', 'POST'])
+@bp.route('/product', methods=['GET', 'PUT', 'DELETE', 'POST'])
 def index():
     if request.method == 'GET':
         return list_products()
