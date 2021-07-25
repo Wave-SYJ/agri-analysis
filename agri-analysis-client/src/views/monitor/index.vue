@@ -2,7 +2,7 @@
   <div>
     <div class="fragment basic-info-fragment">
       <div class="fragment-header">基本信息</div>
-      <div class="fragment-body">
+      <div class="fragment-body" v-loading="!!basicInfoLoading">
         <div class="fragment-body-item">
           <div class="fragment-body-item-key">
             <i class="el-icon-school" style="color: rgba(248, 123, 6, 0.5)" />
@@ -12,7 +12,7 @@
             class="fragment-body-item-value"
             style="color: rgba(248, 123, 6, 0.5)"
           >
-            123
+            {{ basicInfo.marketTotal }}
           </div>
         </div>
         <div class="fragment-body-item">
@@ -24,7 +24,7 @@
             class="fragment-body-item-value"
             style="color: rgba(6, 187, 15, 0.411)"
           >
-            123
+            {{ basicInfo.typeTotal }}
           </div>
         </div>
         <div class="fragment-body-item">
@@ -39,7 +39,7 @@
             class="fragment-body-item-value"
             style="color: rgba(214, 53, 4, 0.411)"
           >
-            123
+            {{ basicInfo.varietyTotal }}
           </div>
         </div>
         <div class="fragment-body-item">
@@ -54,7 +54,7 @@
             class="fragment-body-item-value"
             style="color: rgba(6, 186, 218, 0.507)"
           >
-            123
+            {{ basicInfo.productTotal }}
           </div>
         </div>
       </div>
@@ -76,24 +76,13 @@
           >
             <el-form-item label="地区">
               <el-cascader
-                collapse-tags
-                :options="regionList"
-                v-model="searchMarket"
-                :props="{ multiple: true }"
-                clearable
+                :value="searchMarket"
+                :props="{
+                  lazy: true,
+                  lazyLoad: loadMarketCascade,
+                }"
               />
             </el-form-item>
-
-            <el-form-item label="种类">
-              <el-cascader
-                collapse-tags
-                :options="regionList"
-                v-model="searchType"
-                :props="{ multiple: true }"
-                clearable
-              />
-            </el-form-item>
-
             <el-form-item>
               <el-button type="primary" icon="el-icon-search">查询</el-button>
             </el-form-item>
@@ -104,7 +93,11 @@
               class="fragment-body-line-chart"
               :option="lineChartOption"
             />
-            <v-chart autoresize class="fragment-body-pie-chart" :option="pieChartOption" />
+            <v-chart
+              autoresize
+              class="fragment-body-pie-chart"
+              :option="pieChartOption"
+            />
           </div>
         </div>
       </div>
@@ -113,15 +106,41 @@
 </template>
 
 <script>
-import regionList from "./fakeRegionData";
 import * as echarts from "echarts";
+import { getBasicInfo } from "@/api/monitor";
+import {
+  getProvinceList,
+  getMarketList,
+  getCityList,
+} from "@/api/category";
 
 export default {
   data() {
     return {
-      regionList,
-      searchType: null,
+      basicInfo: {},
+      basicInfoLoading: 0,
+
       searchMarket: null,
+      getMarketOptionsFuns: [
+        async () =>
+          (await getProvinceList()).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: false,
+          })),
+        async (provinceId) =>
+          (await getCityList(provinceId)).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: false,
+          })),
+        async (cityId) =>
+          (await getMarketList(cityId)).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: true,
+          })),
+      ],
 
       lineChartOption: {
         backgroundColor: "#FFFFFF",
@@ -320,6 +339,18 @@ export default {
         ],
       },
     };
+  },
+  async created() {
+    this.basicInfoLoading++;
+    this.basicInfo = await getBasicInfo();
+    this.basicInfoLoading--;
+  },
+  methods: {
+    loadMarketCascade(node, resolve) {
+      this.getMarketOptionsFuns[node.level](node.value).then((res) =>
+        resolve(res)
+      );
+    },
   },
 };
 </script>
