@@ -74,6 +74,16 @@
             label-position="right"
             class="fragment-body-search-pane"
           >
+            <el-form-item label="日期范围">
+              <el-date-picker
+                v-model="searchDate"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              >
+              </el-date-picker>
+            </el-form-item>
             <el-form-item label="地区">
               <el-cascader
                 :value="searchMarket"
@@ -84,7 +94,7 @@
               />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" icon="el-icon-search">查询</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
             </el-form-item>
           </el-form>
           <div class="fragment-body-charts">
@@ -108,11 +118,7 @@
 <script>
 import * as echarts from "echarts";
 import { getBasicInfo } from "@/api/monitor";
-import {
-  getProvinceList,
-  getMarketList,
-  getCityList,
-} from "@/api/category";
+import { getProvinceList, getMarketList, getCityList } from "@/api/category";
 
 export default {
   data() {
@@ -141,6 +147,8 @@ export default {
             leaf: true,
           })),
       ],
+
+      searchDate: [],
 
       lineChartOption: {
         backgroundColor: "#FFFFFF",
