@@ -1,8 +1,10 @@
+from datetime import date
+
 from flask import Flask
+from flask.json import JSONEncoder
+
 from app.config import config
 from . import models, routes
-from datetime import date
-from flask.json import JSONEncoder
 
 
 class MyJSONEncoder(JSONEncoder):

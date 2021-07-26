@@ -1,6 +1,7 @@
 import os
 from flask_cors import CORS
 from sqlalchemy.engine import URL
+from app.spark import init_sql
 import yaml
 
 
@@ -32,6 +33,7 @@ class DevelopmentConfig(BaseConfig):
                                           host=mysql_config['host'], port=mysql_config['port'],
                                           database=mysql_config['database'])
         CORS(app, supports_credentials=True)
+        init_sql('development')
 
 
 config = {

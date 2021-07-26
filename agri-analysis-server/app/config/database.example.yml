@@ -4,6 +4,7 @@
 development:
   database:
     drivername: mysql+pymysql
+    jdbc: jdbc:mysql
     username: root
     password:
     host: localhost
