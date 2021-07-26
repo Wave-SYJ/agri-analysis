@@ -1,10 +1,13 @@
 from pyspark.sql import SparkSession
+from pyspark import SparkConf
 import yaml
 
-appName = "agri-analysis-spark"
-master = "local"
+app_name = "agri-analysis-spark"
+master = "local[*]"
 
-spark = SparkSession.builder.master(master).appName(appName).getOrCreate()
+conf = SparkConf().setAppName(app_name).setMaster(master)
+spark = SparkSession.builder.config(conf=conf).getOrCreate()
+
 mysql_config = {}
 mysql_url = ""
 
@@ -34,6 +37,3 @@ def df_reader(table, column=None, lower_bound=None, upper_bound=None, num_partit
             'password': mysql_config['password']
         }
     )
-
-
-

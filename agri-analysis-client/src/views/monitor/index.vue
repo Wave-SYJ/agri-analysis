@@ -86,7 +86,7 @@
             </el-form-item>
             <el-form-item label="地区">
               <el-cascader
-                :value="searchMarket"
+                v-model="searchMarket"
                 :props="{
                   lazy: true,
                   lazyLoad: loadMarketCascade,
@@ -94,7 +94,13 @@
               />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
+              <el-button
+                type="primary"
+                icon="el-icon-search"
+                @click="handleQuery"
+                :loading="!!searchLoading"
+                >查询</el-button
+              >
             </el-form-item>
           </el-form>
           <div class="fragment-body-charts">
@@ -102,6 +108,7 @@
               autoresize
               class="fragment-body-line-chart"
               :option="lineChartOption"
+              @click="handleLineChartClicked"
             />
             <v-chart
               autoresize
@@ -116,9 +123,12 @@
 </template>
 
 <script>
-import * as echarts from "echarts";
+import lineChartOption, {generateSeries} from './lineChartOption'
+import pieChartOption from './pieChartOption'
 import { getBasicInfo } from "@/api/monitor";
-import { getProvinceList, getMarketList, getCityList } from "@/api/category";
+import { getProvinceList, getMarketList, getCityList, getTypeList } from "@/api/category";
+import { getCrawls } from "@/api/monitor";
+import dayjs from 'dayjs'
 
 export default {
   data() {
@@ -127,6 +137,7 @@ export default {
       basicInfoLoading: 0,
 
       searchMarket: null,
+      searchLoading: 0,
       getMarketOptionsFuns: [
         async () =>
           (await getProvinceList()).map((item) => ({
@@ -149,215 +160,51 @@ export default {
       ],
 
       searchDate: [],
+      searchResult: [],
 
-      lineChartOption: {
-        backgroundColor: "#FFFFFF",
-        title: {
-          top: 20,
-          text: "抓取数量",
-          textStyle: {
-            family: "微软雅黑",
-            fontWeight: "normal",
-            fontSize: 30,
-            color: "#777879",
-            //align: center
-          },
-          left: "40%",
-        },
-        //提示框组件
-        tooltip: {
-          trigger: "axis", //坐标轴触发
-          axisPointer: {
-            lineStyle: {
-              color: "#EAB543",
-            },
-          },
-        },
-        //图例
-        legend: {
-          top: 20,
-          icon: "rect",
-          itemWidth: 14,
-          itemHeight: 7,
-          itemGap: 13, //间隔
-          data: ["果品", "其他"],
-          right: "4%",
-          textStyle: {
-            fontSize: 20,
-            color: "#73716D",
-          },
-        },
-        //网格
-        grid: {
-          top: 100,
-          left: "2%",
-          right: "2%",
-          bottom: "2%",
-          containLabel: true, //grid区域是否包含刻度标签
-        },
-        xAxis: [
-          {
-            type: "category",
-            boundaryGap: false,
-            axisLine: {
-              lineStyle: {
-                color: "#6F7072",
-              },
-              axisLabel: {
-                margin: 10,
-                fontSize: 20,
-              },
-            },
-            data: ["7-16", "7-17", "7-18", "7-19", "7-20"],
-          },
-        ],
-        yAxis: [
-          {
-            type: "value",
-            name: "(条)",
-            axisTick: {
-              show: false,
-            },
-            axisLine: {
-              lineStyle: {
-                color: "#6F7072",
-              },
-            },
-            axisLabel: {
-              margin: 10,
-              fontSize: 20,
-            },
-            splitLine: {
-              lineStyle: {
-                color: "#6F7072",
-              },
-            },
-          },
-        ],
-        series: [
-          {
-            name: "果品",
-            type: "line",
-            smooth: true,
-            symbol: "circle",
-            symbolSize: 5,
-            showSymbol: false,
-            lineStyle: {
-              width: 1,
-            },
-            //区域填充样式
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(
-                0,
-                0,
-                0,
-                1,
-                [
-                  {
-                    offset: 0,
-                    color: "rgba(137, 189, 27, 0.3)",
-                  },
-                  {
-                    offset: 0.8,
-                    color: "rgba(137, 189, 27, 0)",
-                  },
-                ],
-                false
-              ),
-              shadowColor: "rgba(0, 0, 0, 0.1)",
-              shadowBlur: 10,
-            },
-            itemStyle: {
-              color: "rgb(137,189,27)",
-              borderColor: "rgba(137,189,2,0.27)",
-              borderWidth: 12,
-            },
-            data: [220, 182, 191, 134, 150],
-          },
-          {
-            name: "其他",
-            type: "line",
-            smooth: true,
-            symbol: "circle",
-            symbolSize: 5,
-            showSymbol: false,
-            lineStyle: {
-              width: 1,
-            },
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(
-                0,
-                0,
-                0,
-                1,
-                [
-                  {
-                    offset: 0,
-                    color: "rgba(0, 136, 212, 0.3)",
-                  },
-                  {
-                    offset: 0.8,
-                    color: "rgba(0, 136, 212, 0)",
-                  },
-                ],
-                false
-              ),
-              shadowColor: "rgba(0, 0, 0, 0.1)",
-              shadowBlur: 10,
-            },
-            itemStyle: {
-              color: "rgb(0,136,212)",
-              borderColor: "rgba(0,136,212,0.2)",
-              borderWidth: 12,
-            },
-            data: [120, 110, 125, 145, 122],
-          },
-        ],
-      },
-      pieChartOption: {
-        title: {
-          text: "所占记录数",
-          subtext: "纯属虚构",
-          left: "center",
-        },
-        tooltip: {
-          trigger: "item",
-        },
-        legend: {
-          orient: "vertical",
-          left: "left",
-        },
-        series: [
-          {
-            name: "访问来源",
-            type: "pie",
-            radius: "50%",
-            data: [
-              { value: 1048, name: "果品" },
-              { value: 735, name: "其他" },
-            ],
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)",
-              },
-            },
-          },
-        ],
-      },
+      lineChartOption,
+      pieChartOption,
+
+      typeList: []
     };
   },
   async created() {
     this.basicInfoLoading++;
     this.basicInfo = await getBasicInfo();
+    const typeList = await getTypeList();
+    this.lineChartOption.series = typeList.map(item => generateSeries(item.name, item['id']))
+    this.lineChartOption.legend.data = typeList.map(item => item.name)
+    this.typeList = typeList
     this.basicInfoLoading--;
   },
   methods: {
+    handleLineChartClicked({ name: date }) {
+      const record = this.searchResult.find(item => item.date === date);
+      this.pieChartOption.title.subtext = record.date;
+      this.pieChartOption.series[0].data = record.items.map(item => ({
+        name: this.typeList.find(type => type.id === item['type_id']).name,
+        value: item.count
+      }))
+    },
     loadMarketCascade(node, resolve) {
       this.getMarketOptionsFuns[node.level](node.value).then((res) =>
         resolve(res)
       );
+    },
+    async handleQuery() {
+      this.searchLoading++;
+
+      const records = await getCrawls(this.searchDate.map(item => dayjs(item).format('YYYY-MM-DD')), this.searchMarket[2])
+      this.lineChartOption.xAxis[0].data = records.map(item => item.date)
+      this.lineChartOption.series.forEach(series => {
+        series.data = records.map(record => {
+          const res = record.items.find(item => item['type_id'] === series.meta.id)
+          return res ? res.count : 0
+        })
+      })
+      this.searchResult = records;
+
+      this.searchLoading--;
     },
   },
 };
@@ -441,7 +288,7 @@ export default {
 
         .fragment-body-line-chart {
           height: 500px;
-          width: 500px;
+          width: 1000px;
           flex: none;
         }
 

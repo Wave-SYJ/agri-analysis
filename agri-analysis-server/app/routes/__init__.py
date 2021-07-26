@@ -1,7 +1,7 @@
 from .admin import bp as admin_bp
-from .product import bp as product_bp
 from .category import bp as category_bp
 from .monitor import bp as monitor_bp
+from .product import bp as product_bp
 
 
 def init_app(app):

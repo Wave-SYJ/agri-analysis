@@ -1,5 +1,5 @@
 import json
-
+from datetime import datetime
 import scrapy
 import requests
 
@@ -19,6 +19,8 @@ class MofcomSpider(scrapy.Spider):
         self.date = date
 
     def start_requests(self):
+        if self.date is None:
+            self.date = datetime.now().strftime('%Y-%m-%d')
         print("爬取日期：", self.date)
         res = requests.post(url="http://nc.mofcom.gov.cn/jghq/priceList",
                             data=f"queryDateType=4&timeRange={self.date}+~+{self.date}",
