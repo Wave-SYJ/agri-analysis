@@ -2,82 +2,195 @@
   <div class="page-wrapper">
     <div class="page-header">
       <el-form inline label-position="right" class="search-pane">
+        <el-form-item label="日期">
+          <el-date-picker
+            v-model="searchDate"
+            type="date"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
         <el-form-item label="种类">
           <el-cascader
-            collapse-tags
-            :options="regionList"
             v-model="searchType"
-            :props="{ multiple: true }"
-            clearable
+            :props="{
+              lazy: true,
+              lazyLoad: loadTypeCascade,
+            }"
           />
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary">查询</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            :loading="!!searchLoading"
+            @click="handleLoadCountryData"
+            >查询</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
 
     <div class="page-main">
       <div class="page-main-left">
-        <v-chart autoresize :option="leftOptions" />
+        <v-chart
+          @click="handleLineChartClicked"
+          autoresize
+          :option="leftOptions"
+        />
       </div>
       <div class="page-main-right">
-        <Map @changed="handleMapChanged" />
+        <Map @changed="handleMapChanged" :provinceName="mapProvince" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import regionList from "./fakeRegionData";
-import Map from '@/components/Map'
+import Map from "@/components/Map";
+import lineChartOption from "./lineChartOption";
+import {
+  getTypeList,
+  getVarietyList,
+  getVariety,
+  getProvinceList,
+  getCityList,
+  getMarketList,
+} from "@/api/category";
+import { getCountryData, getProvinceData, getCityData } from "@/api/region";
+import dayjs from "dayjs";
 
 export default {
   components: {
-    Map
+    Map,
   },
   data() {
     return {
-      regionList,
-
       searchType: null,
+      searchDate: null,
+      searchLoading: 0,
+      getTypeOptionsFuns: [
+        async () =>
+          (await getTypeList()).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: false,
+          })),
+        async (typeId) =>
+          (await getVarietyList(typeId)).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: true,
+          })),
+      ],
 
-      leftOptions: {
-        title: {
-          text: "富士苹果区域行情",
-          subtext: "数据来自网络",
-        },
-        xAxis: {
-          type: "value",
-        },
-        yAxis: {
-          type: "category",
-          data: [
-            "北京",
-            "天津",
-            "河北",
-            "山西",
-            "内蒙古",
-            "辽宁",
-            "吉林",
-            "浙江",
-            "安徽",
-          ],
-        },
-        series: [
-          {
-            data: [1.2, 2, 1.5, 0.8, 0.7, 1.1, 1.3, 1.2, 0.9],
-            type: "bar",
-          },
-        ],
-      },
+      leftOptions: lineChartOption,
+      mapProvince: "全国",
+      varietyName: "",
+      provinceList: null,
+      cityList: null,
+      marketList: null,
+      current: [],
     };
   },
   methods: {
-    handleMapChanged(v) {
-      console.log(v)
-    }
+    handleMapChanged(v, level) {
+      if (this.mapProvince === v)
+        return;
+      console.log(v, level)
+      this.mapProvince = v;
+      if (level === 0) {
+        this.handleLoadCountryData();
+        this.current = []
+      }
+      else if (level === 1) {
+        if (this.current.length === 2)
+          this.current.splice(1, 1)
+        this.handleLoadProvinceData(v);
+      }
+      else this.handleLoadCityData(v);
+    },
+    loadTypeCascade(node, resolve) {
+      this.getTypeOptionsFuns[node.level](node.value).then((res) =>
+        resolve(res)
+      );
+    },
+    async handleLoadCountryData() {
+      this.searchLoading++;
+      getVariety(this.searchType[1]).then((res) => {
+        this.varietyName = res.name;
+        this.leftOptions.title.text = `${res.name} 区域行情 - 全国`;
+        this.searchLoading--;
+      });
+
+      this.searchLoading++;
+      const res = await getCountryData(
+        dayjs(this.searchDate).format("YYYY-MM-DD"),
+        this.searchType[1]
+      );
+      res.sort((a, b) => -a.name.localeCompare(b.name));
+      this.leftOptions.yAxis.data = res.map((item) => item.name);
+      this.leftOptions.series[0].data = res.map((item) => item["avg_price"]);
+      this.searchLoading--;
+      this.leftOptions.toolbox.feature.myBackBtn.show =
+        this.current.length !== 0;
+    },
+    async handleLoadProvinceData(provinceName) {
+      console.log(this.provinceList, provinceName)
+      const provinceId = this.provinceList.find(
+        (item) => item.name === provinceName
+      ).id;
+      getCityList(provinceId).then((res) => (this.cityList = res));
+      this.current.push(provinceName);
+
+      this.leftOptions.title.text = `${this.varietyName} 区域行情 - ${provinceName}`;
+      const res = await getProvinceData(
+        dayjs(this.searchDate).format("YYYY-MM-DD"),
+        this.searchType[1],
+        provinceId
+      );
+      res.sort((a, b) => -a.name.localeCompare(b.name));
+      this.leftOptions.yAxis.data = res.map((item) => item.name);
+      this.leftOptions.series[0].data = res.map((item) => item["avg_price"]);
+      this.mapProvince = provinceName;
+      this.leftOptions.toolbox.feature.myBackBtn.show =
+        this.current.length !== 0;
+    },
+    async handleLoadCityData(cityName) {
+      this.leftOptions.title.text = `${this.varietyName} 区域行情 - ${cityName}`;
+      const cityId = this.cityList.find((item) => item.name === cityName).id;
+      getMarketList(cityId).then((res) => (this.marketList = res));
+      const res = await getCityData(
+        dayjs(this.searchDate).format("YYYY-MM-DD"),
+        this.searchType[1],
+        cityId
+      );
+      this.current.push(cityName);
+      res.sort((a, b) => -a.name.localeCompare(b.name));
+      this.leftOptions.yAxis.data = res.map((item) => item.name);
+      this.leftOptions.series[0].data = res.map((item) => item["avg_price"]);
+      this.leftOptions.toolbox.feature.myBackBtn.show =
+        this.current.length !== 0;
+    },
+    handleLineChartClicked({ name }) {
+      if (this.current.length === 0) this.handleLoadProvinceData(name);
+      else if (this.current.length === 1) this.handleLoadCityData(name);
+    },
+  },
+  async created() {
+    this.leftOptions.toolbox.feature.myBackBtn.onclick = () => {
+      this.current.splice(this.current.length - 1, 1);
+      if (this.current.length === 0) {
+        this.handleLoadCountryData()
+        this.mapProvince = '全国'
+      }
+      else if (this.current.length === 1)
+        this.handleLoadProvinceData(this.current[0])
+      else
+        this.handleLoadCityData(this.current[1])
+    };
+    this.provinceList = await getProvinceList();
   },
 };
 </script>
@@ -100,7 +213,7 @@ export default {
     flex: auto;
     display: flex;
     .page-main-left {
-      width: 500px;
+      width: 600px;
       height: 100%;
       flex: none;
     }

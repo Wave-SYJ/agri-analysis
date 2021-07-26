@@ -38,4 +38,4 @@ def get_crawls():
 
     count_df = count_df.select("date", "type_id", "count")
 
-    return jsonify(count_df.toJSON().collect())
+    return jsonify(count_df.toJSON().map(lambda x: json.loads(x)).collect())

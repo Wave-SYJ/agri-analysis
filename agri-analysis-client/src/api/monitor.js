@@ -27,7 +27,6 @@ export async function getCrawls(dateRange, market) {
   }
 
   
-  data = data.map(item => JSON.parse(item))
   return dates.map(date => date.format('YYYY-MM-DD')).map(date => ({
     date: date,
     items: data.filter(item => item.date === date)

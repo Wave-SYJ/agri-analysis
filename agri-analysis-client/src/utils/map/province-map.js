@@ -17,7 +17,7 @@ export default{
     "江苏":"jiangsu",
     "江西":"jiangxi",
     "吉林":"jilin",
-    "辽宁":"liaoling",
+    "辽宁":"liaoning",
     "内蒙古":"neimenggu",
     "宁夏":"ningxia",
     "青海":"qinghai",

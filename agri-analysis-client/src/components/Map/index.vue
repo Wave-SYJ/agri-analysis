@@ -12,11 +12,15 @@ import * as echarts from "echarts";
 import provinceMap from "@/utils/map/province-map.js";
 import axios from "axios";
 export default {
+  props: {
+    provinceName: String
+  },
   data() {
     return {
       mapLoading: false,
       rightOptions: {},
       provinceShowing: null,
+      provinceData: null
     };
   },
   async created() {
@@ -49,30 +53,49 @@ export default {
     this.mapLoading = false;
   },
   methods: {
-    async handleProvinceClick({ dataIndexInside: provinceIndex }) {
-      if (this.provinceShowing) return;
+    async handleProvinceClick({ dataIndexInside: index, provinceName }) {
+      if (this.provinceShowing) {
+        if (index !== null && index !== undefined) {
+          if (this.provinceShowing === '新疆')
+            index++;
+          this.$emit('changed', this.provinceData.features[index].properties.name, 2)
+        }
+        return
+      }
+      if (provinceName === '全国')
+        return this.handleMapBack()
 
       this.mapLoading = true;
       this.rightOptions.toolbox.feature.myBackBtn.show = true;
-      const provinceName =
-        this.chinaData.features[provinceIndex].properties.name;
-      this.provinceShowing = provinceName;
+      const _provinceName =
+        provinceName ? provinceName : this.chinaData.features[index].properties.name;
+      this.provinceShowing = _provinceName;
       const provinceData = (
-        await axios.get(`/map/province/${provinceMap[provinceName]}.json`)
+        await axios.get(`/map/province/${provinceMap[_provinceName]}.json`)
       ).data;
-      this.rightOptions.series[0].map = provinceMap[provinceName];
+      this.provinceData = provinceData
+      this.rightOptions.series[0].map = provinceMap[_provinceName];
       this.rightOptions.title.text = `${this.provinceShowing}地图`;
-      echarts.registerMap(provinceMap[provinceName], provinceData);
+      echarts.registerMap(provinceMap[_provinceName], provinceData);
       this.mapLoading = false;
-      this.$emit('changed', provinceName);
+      this.$emit('changed', _provinceName, 1);
     },
     handleMapBack() {
       this.provinceShowing = null;
       this.rightOptions.series[0].map = "china";
       this.rightOptions.title.text = "全国地图";
-      this.$emit('changed', '全国');
+      this.$emit('changed', '全国', 0);
     },
   },
+  watch: {
+    provinceName(val) {
+      if (val === '全国')
+        return this.handleMapBack()
+      this.handleProvinceClick({
+        provinceName: val
+      })
+    }
+  }
 };
 </script>
 
