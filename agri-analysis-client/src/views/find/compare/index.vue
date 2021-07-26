@@ -1,217 +1,176 @@
 <template>
   <div class="page-wrapper">
     <div class="page-header">
+      <el-date-picker
+        v-model="timeRange"
+        type="daterange"
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+      >
+      </el-date-picker>
+      <div style="height: 40px; border-left: 1px solid #DCDFE6; margin: 0 40px" />
       <el-form inline label-position="right" class="search-pane">
         <el-form-item label="地区">
           <el-cascader
-            collapse-tags
-            :options="regionList"
             v-model="searchMarket"
-            :props="{ multiple: true }"
-            clearable
+            :props="{
+              lazy: true,
+              lazyLoad: loadMarketCascade,
+            }"
           />
         </el-form-item>
 
         <el-form-item label="种类">
           <el-cascader
-            collapse-tags
-            :options="regionList"
             v-model="searchType"
-            :props="{ multiple: true }"
-            clearable
+            :props="{
+              lazy: true,
+              lazyLoad: loadTypeCascade,
+            }"
           />
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary">查询</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="handleAddCompareItem"
+            >添加</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
 
     <div class="page-main">
-      <v-chart autoresize :option="chartOption" />
+      <el-table class="page-main-left" :data="compareList">
+        <el-table-column label="地区">
+          <template v-slot="scope">{{ scope.row.market.name }}</template>
+        </el-table-column>
+        <el-table-column label="种类" :width="120">
+          <template v-slot="scope">{{ scope.row.variety.name }}</template>
+        </el-table-column>
+        <el-table-column label="操作" :width="80">
+          <template v-slot="scope"
+            ><el-button
+              size="mini"
+              type="danger"
+              @click="handleRemoveCompareItem(scope.$index)"
+              >删除</el-button
+            ></template
+          >
+        </el-table-column>
+      </el-table>
+      <v-chart class="page-main-right" autoresize :option="chartOption" />
     </div>
   </div>
 </template>
 
 <script>
-import * as echarts from "echarts";
-import regionList from "./fakeRegionData";
+import chartOption, {generateSeries} from "./chartOption";
+import { getPriceDatas } from "@/api/compare"
+import {
+  getProvinceList,
+  getMarketList,
+  getCityList,
+  getTypeList,
+  getVarietyList,
+  getMarket,
+  getVariety,
+} from "@/api/category";
+import dayjs from 'dayjs';
 
 export default {
   data() {
     return {
-      regionList,
+      timeRange: [],
       searchType: null,
       searchMarket: null,
+      getMarketOptionsFuns: [
+        async () =>
+          (await getProvinceList()).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: false,
+          })),
+        async (provinceId) =>
+          (await getCityList(provinceId)).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: false,
+          })),
+        async (cityId) =>
+          (await getMarketList(cityId)).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: true,
+          })),
+      ],
+      getTypeOptionsFuns: [
+        async () =>
+          (await getTypeList()).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: false,
+          })),
+        async (typeId) =>
+          (await getVarietyList(typeId)).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: true,
+          })),
+      ],
 
-      chartOption: {
-        backgroundColor: "#FFFFFF",
-        title: {
-          top: 20,
-          text: "品种对比",
-          family: "微软雅黑",
-          fontWeight: "normal",
-          fontSize: 30,
-          color: "#777879",
-          //align: center
-          left: "40%",
-        },
-        //提示框组件
-        tooltip: {
-          trigger: "axis", //坐标轴触发
-          axisPointer: {
-            lineStyle: {
-              color: "#EAB543",
-            },
-          },
-        },
-        //图例
-        legend: {
-          top: 20,
-          icon: "rect",
-          itemWidth: 14,
-          itemHeight: 7,
-          itemGap: 13, //间隔
-          data: ["A 品种", "B 品种"],
-          right: "4%",
-          textStyle: {
-            fontSize: 20,
-            color: "#73716D",
-          },
-        },
-        //网格
-        grid: {
-          top: 100,
-          left: "2%",
-          right: "2%",
-          bottom: "2%",
-          containLabel: true, //grid区域是否包含刻度标签
-        },
-        xAxis: [
-          {
-            type: "category",
-            boundaryGap: false,
-            axisLine: {
-              lineStyle: {
-                color: "#6F7072",
-              },
-              axisLabel: {
-                margin: 10,
-                textStyle: {
-                  fontSize: 20,
-                },
-              },
-            },
-            data: ["7-16", "7-17", "7-18", "7-19", "7-20"],
-          },
-        ],
-        yAxis: [
-          {
-            type: "value",
-            name: "(元/斤)",
-            axisTick: {
-              show: false,
-            },
-            axisLine: {
-              lineStyle: {
-                color: "#6F7072",
-              },
-            },
-            axisLabel: {
-              margin: 10,
-              textStyle: {
-                fontSize: 20,
-              },
-            },
-            splitLine: {
-              lineStyle: {
-                color: "#6F7072",
-              },
-            },
-          },
-        ],
-        series: [
-          {
-            name: "A 品种",
-            type: "line",
-            smooth: false,
-            symbol: "circle",
-            symbolSize: 5,
-            showSymbol: false,
-            lineStyle: {
-              width: 1,
-            },
-            //区域填充样式
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(
-                0,
-                0,
-                0,
-                1,
-                [
-                  {
-                    offset: 0,
-                    color: "rgba(137, 189, 27, 0.3)",
-                  },
-                  {
-                    offset: 0.8,
-                    color: "rgba(137, 189, 27, 0)",
-                  },
-                ],
-                false
-              ),
-              shadowColor: "rgba(0, 0, 0, 0.1)",
-              shadowBlur: 10,
-            },
-            itemStyle: {
-              color: "rgb(137,189,27)",
-              borderColor: "rgba(137,189,2,0.27)",
-              borderWidth: 12,
-            },
-            data: [220, 182, 191, 134, 150],
-          },
-          {
-            name: "B 品种",
-            type: "line",
-            smooth: false,
-            symbol: "circle",
-            symbolSize: 5,
-            showSymbol: false,
-            lineStyle: {
-              width: 1,
-            },
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(
-                0,
-                0,
-                0,
-                1,
-                [
-                  {
-                    offset: 0,
-                    color: "rgba(0, 136, 212, 0.3)",
-                  },
-                  {
-                    offset: 0.8,
-                    color: "rgba(0, 136, 212, 0)",
-                  },
-                ],
-                false
-              ),
-              shadowColor: "rgba(0, 0, 0, 0.1)",
-              shadowBlur: 10,
-            },
-            itemStyle: {
-              color: "rgb(0,136,212)",
-              borderColor: "rgba(0,136,212,0.2)",
-              borderWidth: 12,
-            },
-            data: [120, 110, 125, 145, 122],
-          },
-        ],
-      },
+      compareList: [],
+
+      chartOption,
     };
+  },
+  methods: {
+    loadTypeCascade(node, resolve) {
+      this.getTypeOptionsFuns[node.level](node.value).then((res) =>
+        resolve(res)
+      );
+    },
+    loadMarketCascade(node, resolve) {
+      this.getMarketOptionsFuns[node.level](node.value).then((res) =>
+        resolve(res)
+      );
+    },
+    async handleAddCompareItem() {
+      const [market, variety] = await Promise.all([
+        getMarket(this.searchMarket[2]),
+        getVariety(this.searchType[1]),
+      ]);
+      this.compareList.push({
+        market,
+        variety,
+      });
+      await this.loadData();
+    },
+    async handleRemoveCompareItem(index) {
+      this.compareList.splice(index, 1);
+      await this.loadData();
+    },
+    async loadData() {
+      const records = await getPriceDatas(
+        this.timeRange.map(item => dayjs(item).format('YYYY-MM-DD')),
+        this.compareList.map(item => ({
+          marketId: item.market.id,
+          varietyId: item.variety.id
+        }))
+      )
+      this.chartOption.xAxis[0].data = records.map(item => item.date)
+      this.chartOption.legend.data = records.map(item => `${item['market_name']} ${item['variety_name']}`)
+      this.chartOption.series = this.compareList.map(item => generateSeries(`${item.market.name} ${item.variety.name}`, item.market.id, item.variety.id))
+      this.chartOption.series.forEach(series => {
+        series.data = records.map(record => {
+          const res = record.items.find(item => item['variety_id'] === series.meta.varietyId && item['market_id'] === series.meta.marketId)
+          return res ? res.price : 0
+        })
+      })
+      console.log(records)
+    }
   },
 };
 </script>
@@ -234,7 +193,7 @@ export default {
     flex: auto;
     display: flex;
     .page-main-left {
-      width: 500px;
+      width: 600px;
       height: 100%;
       flex: none;
     }

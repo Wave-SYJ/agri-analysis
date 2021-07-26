@@ -10,6 +10,7 @@ export default {
     },
   },
   xAxis: {
+    name: '价格 （元/斤）',
     type: "value",
   },
   yAxis: {
@@ -23,7 +24,8 @@ export default {
     },
   ],
   grid: {
-    left: "25%"
+    left: "20%",
+    right: '15%'
   },
   toolbox: {
     show: true,
