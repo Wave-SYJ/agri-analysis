@@ -7,6 +7,7 @@
         range-separator="至"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
+        @change="loadData"
       >
       </el-date-picker>
       <div style="height: 40px; border-left: 1px solid #DCDFE6; margin: 0 40px" />
@@ -139,6 +140,12 @@ export default {
       );
     },
     async handleAddCompareItem() {
+      if (this.searchMarket === null || this.searchMarket.length === 0)
+        return this.$message.error('市场不能为空')
+      if (this.searchType === null || this.searchType.length === 0)
+        return this.$message.error('种类不能为空')
+      if (this.timeRange === null || this.timeRange.length === 0)
+        return this.$message.error('日期范围不能为空')
       const [market, variety] = await Promise.all([
         getMarket(this.searchMarket[2]),
         getVariety(this.searchType[1]),

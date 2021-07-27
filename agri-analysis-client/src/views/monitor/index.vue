@@ -209,6 +209,11 @@ export default {
       );
     },
     async handleQuery() {
+      if (this.searchDate.length === 0)
+        return this.$message.error("请选择正确的时间范围")
+      if (this.searchMarket === null)
+        return this.$message.error("地区不能为空")
+
       this.searchLoading++;
 
       const records = await getCrawls(

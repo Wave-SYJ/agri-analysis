@@ -13,4 +13,10 @@ request.interceptors.request.use(
   }
 );
 
+request.interceptors.response.use(
+  config => {
+    return config;
+  }
+)
+
 export default request;

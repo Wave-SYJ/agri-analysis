@@ -86,7 +86,7 @@ export default {
   grid: {
     top: 100,
     left: '2%',
-    right: '2%',
+    right: '10%',
     bottom: '2%',
     containLabel: true //grid区域是否包含刻度标签
   },

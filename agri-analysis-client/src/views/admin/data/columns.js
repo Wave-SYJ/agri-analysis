@@ -10,7 +10,8 @@ function formatFun(item) {
 export default [
   {
     title: '#',
-    type: 'index'
+    type: 'index',
+    nullable: true
   },
   {
     title: '日期',
@@ -19,7 +20,8 @@ export default [
     prop: 'date',
     editable: true,
     searchable: true,
-    sortable: true
+    sortable: true,
+    nullable: false
   },
   {
     title: '品种',
@@ -37,7 +39,8 @@ export default [
     handleChangeFun: async (editingObj, newId) => {
       editingObj.variety_id = newId;
       editingObj.variety = await getVariety(newId);
-    }
+    },
+    nullable: false
   },
   {
     title: '价格',
@@ -48,7 +51,8 @@ export default [
     searchable: true,
     precision: 2,
     step: 0.1,
-    sortable: true
+    sortable: true,
+    nullabel: false
   },
   {
     title: '市场',
@@ -67,10 +71,23 @@ export default [
     handleChangeFun: async (editingObj, newId) => {
       editingObj.market_id = newId;
       editingObj.market = await getMarket(newId);
-    }
+    },
+    nullabel: false
+  },
+  {
+    title: '售卖人次',
+    type: 'number',
+    prop: 'sell_number',
+    editable: true,
+    searchable: true,
+    precision: 0,
+    step: 1,
+    sortable: true,
+    nullabel: false
   },
   {
     title: '操作',
-    type: 'operations'
+    type: 'operations',
+    nullabel: true
   }
 ];

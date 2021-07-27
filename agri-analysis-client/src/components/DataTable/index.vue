@@ -136,8 +136,8 @@
                 <el-input-number
                   style="margin-right: 5px"
                   v-model="editingObj[column.prop]"
-                  :precision="2"
-                  :step="0.1"
+                  :precision="column.precision"
+                  :step="column.step"
                 />
                 {{ column.suffix }}
               </span>
@@ -483,6 +483,10 @@ export default {
       this.$emit("refresh", this.pagination, this.sortInfo, this.searchObj);
     },
     handleConfirmEdit() {
+      for (let column of this.columns) {
+        if (!column.nullable && !this.editingObj[column.prop])
+          return this.$message.error(`${column.title}不能为空`)
+      }
       this.$emit("update", this.editingObj);
       this.editingIndex = null;
       this.editingObj = {};
@@ -511,6 +515,10 @@ export default {
       this.insertObj = {};
     },
     async handleInsertConfirm() {
+      for (let column of this.columns) {
+        if (!column.nullable && !this.insertObj[column.prop])
+          return this.$message.error(`${column.title}不能为空`)
+      }
       this.$emit("insert", this.insertObj);
       this.insertDlgVisible = false;
       this.insertObj = {};

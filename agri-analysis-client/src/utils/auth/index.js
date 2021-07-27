@@ -31,5 +31,6 @@ export async function getUserInfo() {
     return null;
   if (userInfo) return userInfo
   userInfo = await remoteGetUserInfo()
+  subscribeFuns.forEach(fun => fun(userInfo))
   return userInfo
 }

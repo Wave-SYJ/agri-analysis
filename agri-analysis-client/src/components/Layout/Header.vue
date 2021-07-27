@@ -35,6 +35,7 @@ export default {
     handleLogout() {
       this.userInfo = null;
       logout();
+      this.$router.replace('/')
       this.$message.success("退出成功")
     }
   }

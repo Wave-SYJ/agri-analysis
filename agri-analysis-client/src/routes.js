@@ -1,4 +1,7 @@
 import Layout from '@/components/Layout'
+import { getUserInfo } from '@/utils/auth';
+import Vue from 'vue';
+import VueRouter from 'vue-router'
 
 export const dashboardRoutes = [
   {
@@ -131,4 +134,23 @@ const routes = [
   ...dashboardRoutes
 ]
 
-export default routes
+Vue.use(VueRouter);
+const router = new VueRouter({
+  routes,
+  mode: 'history'
+})
+
+router.beforeEach(async (to, from , next) => {
+  if (!to.meta.allow)
+    return next()
+
+  const userInfo = await getUserInfo()
+  if (userInfo === null)
+    return router.replace('/login')
+  if (to.meta.allow.indexOf(userInfo.identity) !== -1)
+    return next()
+  else
+    router.replace('/login')
+})
+
+export default router

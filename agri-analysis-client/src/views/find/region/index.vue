@@ -117,6 +117,11 @@ export default {
       );
     },
     async handleLoadCountryData() {
+      if (this.searchType === null || this.searchType.length === 0)
+        return this.$message.error("种类不能为空")
+      if (this.searchDate === null || this.searchDate.length === 0)
+        return this.$message.error('日期不能为空')
+
       this.searchLoading++;
       getVariety(this.searchType[1]).then((res) => {
         this.varietyName = res.name;
