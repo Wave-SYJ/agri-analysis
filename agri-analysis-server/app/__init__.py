@@ -31,5 +31,6 @@ def create_app(config_name='default'):
         admin = Admin.query.filter(Admin.username == 'admin').all()
         if admin is None or len(admin) == 0:
             db.session.add(Admin("admin", generate_password_hash('admin'), 'super-admin'))
+            db.session.commit()
 
     return app
