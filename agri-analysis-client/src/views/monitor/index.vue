@@ -103,18 +103,26 @@
               >
             </el-form-item>
           </el-form>
-          <div class="fragment-body-charts">
-            <v-chart
-              autoresize
-              class="fragment-body-line-chart"
-              :option="lineChartOption"
-              @click="handleLineChartClicked"
+          <div class="fragment-body-charts" v-loading="searchLoading">
+            <el-empty
+              v-if="!searchResult || searchResult.length == 0"
+              description="暂无内容"
             />
-            <v-chart
-              autoresize
-              class="fragment-body-pie-chart"
-              :option="pieChartOption"
-            />
+            <template v-else>
+              <v-chart
+                autoresize
+                class="fragment-body-line-chart"
+                :option="lineChartOption"
+                @click="handleLineChartClicked"
+              />
+              <el-empty v-if="!lineClicked" description="请选择日期" class="fragment-body-pie-chart" />
+              <v-chart
+                v-else
+                autoresize
+                class="fragment-body-pie-chart"
+                :option="pieChartOption"
+              />
+            </template>
           </div>
         </div>
       </div>
@@ -123,12 +131,17 @@
 </template>
 
 <script>
-import lineChartOption, {generateSeries} from './lineChartOption'
-import pieChartOption from './pieChartOption'
+import lineChartOption, { generateSeries } from "./lineChartOption";
+import pieChartOption from "./pieChartOption";
 import { getBasicInfo } from "@/api/monitor";
-import { getProvinceList, getMarketList, getCityList, getTypeList } from "@/api/category";
+import {
+  getProvinceList,
+  getMarketList,
+  getCityList,
+  getTypeList,
+} from "@/api/category";
 import { getCrawls } from "@/api/monitor";
-import dayjs from 'dayjs'
+import dayjs from "dayjs";
 
 export default {
   data() {
@@ -164,27 +177,31 @@ export default {
 
       lineChartOption,
       pieChartOption,
+      lineClicked: false,
 
-      typeList: []
+      typeList: [],
     };
   },
   async created() {
     this.basicInfoLoading++;
     this.basicInfo = await getBasicInfo();
     const typeList = await getTypeList();
-    this.lineChartOption.series = typeList.map(item => generateSeries(item.name, item['id']))
-    this.lineChartOption.legend.data = typeList.map(item => item.name)
-    this.typeList = typeList
+    this.lineChartOption.series = typeList.map((item) =>
+      generateSeries(item.name, item["id"])
+    );
+    this.lineChartOption.legend.data = typeList.map((item) => item.name);
+    this.typeList = typeList;
     this.basicInfoLoading--;
   },
   methods: {
     handleLineChartClicked({ name: date }) {
-      const record = this.searchResult.find(item => item.date === date);
+      const record = this.searchResult.find((item) => item.date === date);
       this.pieChartOption.title.subtext = record.date;
-      this.pieChartOption.series[0].data = record.items.map(item => ({
-        name: this.typeList.find(type => type.id === item['type_id']).name,
-        value: item.count
-      }))
+      this.pieChartOption.series[0].data = record.items.map((item) => ({
+        name: this.typeList.find((type) => type.id === item["type_id"]).name,
+        value: item.count,
+      }));
+      this.lineClicked = true;
     },
     loadMarketCascade(node, resolve) {
       this.getMarketOptionsFuns[node.level](node.value).then((res) =>
@@ -194,14 +211,19 @@ export default {
     async handleQuery() {
       this.searchLoading++;
 
-      const records = await getCrawls(this.searchDate.map(item => dayjs(item).format('YYYY-MM-DD')), this.searchMarket[2])
-      this.lineChartOption.xAxis[0].data = records.map(item => item.date)
-      this.lineChartOption.series.forEach(series => {
-        series.data = records.map(record => {
-          const res = record.items.find(item => item['type_id'] === series.meta.id)
-          return res ? res.count : 0
-        })
-      })
+      const records = await getCrawls(
+        this.searchDate.map((item) => dayjs(item).format("YYYY-MM-DD")),
+        this.searchMarket[2]
+      );
+      this.lineChartOption.xAxis[0].data = records.map((item) => item.date);
+      this.lineChartOption.series.forEach((series) => {
+        series.data = records.map((record) => {
+          const res = record.items.find(
+            (item) => item["type_id"] === series.meta.id
+          );
+          return res ? res.count : 0;
+        });
+      });
       this.searchResult = records;
 
       this.searchLoading--;
