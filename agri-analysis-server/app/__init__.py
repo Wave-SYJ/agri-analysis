@@ -27,8 +27,9 @@ def create_app(config_name='default'):
     models.init_app(app)
     routes.init_app(app)
 
-    admin = Admin.query().filter(username='admin').all()
-    if admin is None or len(admin) == 0:
-        db.session.add(Admin("admin", generate_password_hash('admin'), 'super-admin'))
+    with app.app_context():
+        admin = Admin.query().filter(username='admin').all()
+        if admin is None or len(admin) == 0:
+            db.session.add(Admin("admin", generate_password_hash('admin'), 'super-admin'))
 
     return app
