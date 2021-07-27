@@ -29,9 +29,7 @@ export default {
     }
   },
   async created() {
-    this.userInfoLoading++;
     this.userInfo = await getUserInfo();
-    this.userInfoLoading--;
   },
   methods: {
     handleLogout() {

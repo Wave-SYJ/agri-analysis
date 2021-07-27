@@ -1,5 +1,5 @@
 <template>
-  <DataTable :tableData="tableData" :totalItems="totalItmes" :columns="columns" @insert="handleInsert" :loading="!!loading" @delete="handleDelete" @update="handleUpdate" @refresh="handleRefresh" />
+  <DataTable :tableData="tableData" :totalItems="totalItmes" :columns="columns" @insert="handleInsert" :loading="!!loading" @delete="handleDelete" @update="handleUpdate" @refresh="handleRefresh" :allowEdit="true" />
 </template>
 
 <script>

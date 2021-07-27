@@ -8,6 +8,7 @@
     @delete="handleDelete"
     @update="handleUpdate"
     @refresh="handleRefresh"
+    :allowEdit="allowEdit"
   />
 </template>
 
@@ -21,6 +22,7 @@ import {
 } from "@/api/product";
 import columns from "./columns";
 import dayjs from "dayjs";
+import {subscribe} from '@/utils/auth'
 
 export default {
   components: {
@@ -33,6 +35,7 @@ export default {
       loading: 0,
       totalItmes: 0,
       pagination: {},
+      allowEdit: false
     };
   },
   methods: {
@@ -89,6 +92,12 @@ export default {
       this.loading--;
     },
   },
+  created() {
+    const that = this
+    subscribe(val => {
+      that.allowEdit = !!val
+    })
+  }
 };
 </script>
 

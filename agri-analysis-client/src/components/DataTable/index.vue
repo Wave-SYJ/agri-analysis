@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="page-header">
-      <div class="page-header-left">
+      <div class="page-header-left" v-if="allowEdit">
         <el-button
           type="success"
           icon="el-icon-plus"
@@ -176,7 +176,7 @@
 
           // operations
           <el-table-column
-            v-if="column.type === 'operations'"
+            v-if="column.type === 'operations' && allowEdit"
             :key="column.key || column.prop || column.title"
             :label="column.title"
             :width="250"
@@ -407,13 +407,13 @@ export default {
     columns: Array,
     loading: Boolean,
     totalItems: Number,
+    allowEdit: Boolean
   },
   components: {
     NumberRangeInput,
   },
   data() {
     return {
-      console,
       dayjs,
       editingIndex: null,
       editingObj: {},

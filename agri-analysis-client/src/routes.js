@@ -74,7 +74,8 @@ export const dashboardRoutes = [
     meta: {
       title: '数据管理',
       icon: 'el-icon-edit',
-      hasChildren: true
+      hasChildren: true,
+      allow: ['super-admin', 'ordinary-admin']
     },
     component: Layout,
     children: [
@@ -83,8 +84,8 @@ export const dashboardRoutes = [
         name: 'dashboard-admin-data',
         component: () => import("@/views/admin/data"),
         meta: {
-          title: '数据修改',
-          icon: 'el-icon-edit-outline'
+          title: '数据查阅',
+          icon: 'el-icon-edit-outline',
         },
       },
       {
@@ -93,7 +94,8 @@ export const dashboardRoutes = [
         component: () => import("@/views/admin/user"),
         meta: {
           title: '用户管理',
-          icon: 'el-icon-user'
+          icon: 'el-icon-user',
+          allow: ['super-admin']
         },
       },
       {
@@ -102,7 +104,8 @@ export const dashboardRoutes = [
         component: () => import("@/views/admin/password"),
         meta: {
           title: '修改密码',
-          icon: 'el-icon-lock'
+          icon: 'el-icon-lock',
+          allow: ['super-admin', 'ordinary-admin']
         }
       }
     ]
