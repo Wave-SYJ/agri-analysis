@@ -63,7 +63,7 @@
         </el-table-column>
       </el-table>
       <el-empty class="page-main-right" v-if="!compareList || compareList.length == 0" description="暂无内容"/>
-      <v-chart v-else class="page-main-right" autoresize :option="chartOption" />
+      <v-chart ref="myChart" v-else class="page-main-right" autoresize :option="chartOption" />
     </div>
   </div>
 </template>
@@ -178,6 +178,7 @@ export default {
           return res ? res.price : 0
         })
       })
+      this.$refs.myChart && this.$refs.myChart.setOption(this.chartOption, true);
       this.loading--;
     }
   },
