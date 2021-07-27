@@ -15,6 +15,7 @@ class Product(db.Model, SerializerMixin):
     market_id = db.Column(db.String(32), db.ForeignKey(Market.id), nullable=True)
     price = db.Column(db.Float, nullable=True)
     date = db.Column(db.Date, nullable=True)
+    sell_number = db.Column(db.Integer, nullable=True)
 
     market = db.relationship("Market")
     variety = db.relationship("Variety")

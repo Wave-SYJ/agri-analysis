@@ -18,7 +18,8 @@ export default [
     format: 'YYYY-MM-DD',
     prop: 'date',
     editable: true,
-    searchable: true
+    searchable: true,
+    sortable: true
   },
   {
     title: '品种',
@@ -46,7 +47,8 @@ export default [
     editable: true,
     searchable: true,
     precision: 2,
-    step: 0.1
+    step: 0.1,
+    sortable: true
   },
   {
     title: '市场',

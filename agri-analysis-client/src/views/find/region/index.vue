@@ -98,7 +98,6 @@ export default {
     handleMapChanged(v, level) {
       if (this.mapProvince === v)
         return;
-      console.log(v, level)
       this.mapProvince = v;
       if (level === 0) {
         this.handleLoadCountryData();
@@ -137,7 +136,6 @@ export default {
         this.current.length !== 0;
     },
     async handleLoadProvinceData(provinceName) {
-      console.log(this.provinceList, provinceName)
       const provinceId = this.provinceList.find(
         (item) => item.name === provinceName
       ).id;

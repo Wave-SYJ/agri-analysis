@@ -26,6 +26,7 @@
           icon="el-icon-search"
           @click="handleStartSearch"
           :disabled="editingIndex != null"
+          :style="searching ? {color: 'red'} : null"
         >
           搜索
         </el-button>
@@ -38,6 +39,7 @@
         :height="tableHeight"
         v-loading="loading"
         @selection-change="(val) => (selection = val)"
+        @sort-change="handleSortChanged"
       >
         <el-table-column type="selection" width="30"> </el-table-column>
         <template v-for="column in columns">
@@ -56,6 +58,7 @@
             v-if="column.type === 'date'"
             :key="column.key || column.prop || column.title"
             :label="column.title"
+            :sortable="!!column.sortable && 'custom'"
           >
             <template v-slot="scope">
               <span v-if="editingIndex !== scope.$index || !column.editable">
@@ -75,6 +78,7 @@
             v-if="column.type === 'text'"
             :key="column.key || column.prop || column.title"
             :label="column.title"
+            :sortable="!!column.sortable && 'custom'"
           >
             <template v-slot="scope">
               <span v-if="editingIndex !== scope.$index || !column.editable">
@@ -89,6 +93,7 @@
             v-if="column.type === 'cascade'"
             :key="column.key || column.prop || column.title"
             :label="column.title"
+            :sortable="!!column.sortable && 'custom'"
           >
             <template v-slot="scope">
               <span v-if="editingIndex !== scope.$index || !column.editable">
@@ -121,6 +126,7 @@
             v-if="column.type === 'number'"
             :key="column.key || column.prop || column.title"
             :label="column.title"
+            :sortable="!!column.sortable && 'custom'"
           >
             <template v-slot="scope">
               <span v-if="editingIndex !== scope.$index || !column.editable">
@@ -315,7 +321,7 @@
             :label="column.title"
             v-if="column.type === 'text'"
           >
-            <el-input v-model="searchObj[column.prop]" />
+            <el-input v-model="searchObj[column.prop]" clearable />
           </el-form-item>
           <el-form-item
             :key="column.key || column.prop || column.title"
@@ -324,10 +330,12 @@
           >
             <el-date-picker
               v-model="searchObj[column.prop]"
+              clearable
               type="daterange"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              :picker-options="pickerOptions"
             >
             </el-date-picker>
           </el-form-item>
@@ -338,10 +346,33 @@
           >
             <NumberRangeInput v-model="searchObj[column.prop]" />
           </el-form-item>
+
+          <el-form-item
+            v-if="column.type === 'cascade'"
+            :key="column.key || column.prop || column.title"
+            :label="column.title"
+          >
+            <el-cascader
+              :value="column.getValuesFun(searchObj[column.prop])"
+              @change="
+                (v) => column.handleChangeFun(searchObj, v[column.degree - 1])
+              "
+              clearable
+              :props="{
+                lazy: true,
+                lazyLoad(node, resolve) {
+                  column.getOptionsFuns[node.level](node.value).then((res) =>
+                    resolve(res)
+                  );
+                },
+              }"
+            />
+          </el-form-item>
         </template>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button>取消</el-button>
+          <el-button type="primary" @click="handleConfirmSearch">搜索</el-button>
+          <el-button @click="searchDrawerShow = false">取消</el-button>
+          <el-button style="float: right" @click="handleClearSearch">清空</el-button>
         </el-form-item>
       </el-form>
     </el-drawer>
@@ -396,13 +427,61 @@ export default {
 
       searchDrawerShow: false,
       searchObj: {},
+      searching: false,
       currentData: [],
 
       insertDlgVisible: false,
       insertObj: {},
+
+      sortInfo: null,
+
+      pickerOptions: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        },
     };
   },
   methods: {
+    handleConfirmSearch() {
+      this.searching = true
+      this.$emit("refresh", this.pagination, this.sortInfo, this.searchObj);
+      this.searchDrawerShow = false;
+    },
+    handleClearSearch() {
+      this.searching = false,
+      this.$emit("refresh", this.pagination, this.sortInfo, this.searchObj);
+      this.searchObj = {}
+    },
+    handleSortChanged({column, order}) {
+      this.sortInfo = {
+        column: this.columns.find(item => item.title === column.label).prop,
+        order
+      }
+      this.$emit("refresh", this.pagination, this.sortInfo, this.searchObj);
+    },
     handleConfirmEdit() {
       this.$emit("update", this.editingObj);
       this.editingIndex = null;
@@ -452,7 +531,7 @@ export default {
         ...this.pagination,
         ...currentPagination,
       };
-      this.$emit("refresh", this.pagination);
+      this.$emit("refresh", this.pagination, this.sortInfo, this.searchObj);
     },
     getSearchInitObj() {
       const result = {};

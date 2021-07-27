@@ -169,7 +169,6 @@ export default {
           return res ? res.price : 0
         })
       })
-      console.log(records)
     }
   },
 };

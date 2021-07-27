@@ -10,7 +10,7 @@ import yaml
 import pymysql
 import uuid
 from time import localtime, strftime
-
+import random
 
 class AppPipeline:
     def process_item(self, item, spider):
@@ -35,14 +35,14 @@ class ProductPipeline:
     def process_item(self, item, spider):
         try:
             self.cursor.execute("""
-                INSERT t_product(id, variety_id, market_id, price, date)
-                SELECT %s, t_variety.id, t_market.id, %s, %s
+                INSERT t_product(id, variety_id, market_id, price, date, sell_number)
+                SELECT %s, t_variety.id, t_market.id, %s, %s, %s
                 FROM t_variety
                 INNER JOIN t_market ON t_variety.origin_code = %s AND t_market.origin_id = %s
             """, (
                 uuid.uuid4().hex, float(item['AG_PRICE']),
                 strftime('%Y-%m-%d', localtime(int(item['GET_P_DATE']) / 1000)),
-                int(item['CRAFT_INDEX']), int(item['ID'])))
+                random.randint(0, 50), int(item['CRAFT_INDEX']), int(item['ID'])))
 
             self.connect.commit()
         except Exception as e:

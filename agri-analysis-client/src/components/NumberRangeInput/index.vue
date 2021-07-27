@@ -3,13 +3,15 @@
     <el-input
       style="flex: auto"
       v-model="value[0]"
-      @input="$emit('input', [value[0], $event.target.value])"
+      @input="v => $emit('input', [v, value[1]])"
+      clearable
     />
     <span style="flex: none; margin: 0 10px">-</span>
     <el-input
       style="flex: auto"
       v-model="value[1]"
-      @input="$emit('input', [$event.target.value], value[1])"
+      @input="v => $emit('input', [value[0], v])"
+      clearable
     />
   </div>
 </template>
@@ -19,6 +21,12 @@ export default {
   props: {
     value: Array,
   },
+  watch: {
+    value(val) {
+      if (!val)
+        this.$emit('input', [null, null])
+    }
+  }
 };
 </script>
 
