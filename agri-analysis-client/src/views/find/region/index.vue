@@ -32,17 +32,20 @@
       </el-form>
     </div>
 
-    <div class="page-main">
-      <div class="page-main-left">
-        <v-chart
-          @click="handleLineChartClicked"
-          autoresize
-          :option="leftOptions"
-        />
-      </div>
-      <div class="page-main-right">
-        <Map @changed="handleMapChanged" :provinceName="mapProvince" />
-      </div>
+    <div class="page-main" v-loading="searchLoading">
+      <el-empty v-if="!searched" description="暂无内容" style="width: 100%" />
+      <template v-else>
+        <div class="page-main-left">
+          <v-chart
+            @click="handleLineChartClicked"
+            autoresize
+            :option="leftOptions"
+          />
+        </div>
+        <div class="page-main-right">
+          <Map @changed="handleMapChanged" :provinceName="mapProvince" />
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -92,23 +95,21 @@ export default {
       cityList: null,
       marketList: null,
       current: [],
+
+      searched: false,
     };
   },
   methods: {
     handleMapChanged(v, level) {
-      if (this.mapProvince === v)
-        return;
+      if (this.mapProvince === v) return;
       this.mapProvince = v;
       if (level === 0) {
         this.handleLoadCountryData();
-        this.current = []
-      }
-      else if (level === 1) {
-        if (this.current.length === 2)
-          this.current.splice(1, 1)
+        this.current = [];
+      } else if (level === 1) {
+        if (this.current.length === 2) this.current.splice(1, 1);
         this.handleLoadProvinceData(v);
-      }
-      else this.handleLoadCityData(v);
+      } else this.handleLoadCityData(v);
     },
     loadTypeCascade(node, resolve) {
       this.getTypeOptionsFuns[node.level](node.value).then((res) =>
@@ -134,20 +135,26 @@ export default {
       this.searchLoading--;
       this.leftOptions.toolbox.feature.myBackBtn.show =
         this.current.length !== 0;
+      this.searched = true;
     },
     async handleLoadProvinceData(provinceName) {
       const provinceId = this.provinceList.find(
         (item) => item.name === provinceName
       ).id;
       getCityList(provinceId).then((res) => (this.cityList = res));
-      this.current.push(provinceName);
+      if (this.current.length == 0)
+        this.current.push(provinceName);
+      else
+        this.current[0] = provinceName
 
+      this.searchLoading++;
       this.leftOptions.title.text = `${this.varietyName} 区域行情 - ${provinceName}`;
       const res = await getProvinceData(
         dayjs(this.searchDate).format("YYYY-MM-DD"),
         this.searchType[1],
         provinceId
       );
+      this.searchLoading--;
       res.sort((a, b) => -a.name.localeCompare(b.name));
       this.leftOptions.yAxis.data = res.map((item) => item.name);
       this.leftOptions.series[0].data = res.map((item) => item["avg_price"]);
@@ -159,12 +166,17 @@ export default {
       this.leftOptions.title.text = `${this.varietyName} 区域行情 - ${cityName}`;
       const cityId = this.cityList.find((item) => item.name === cityName).id;
       getMarketList(cityId).then((res) => (this.marketList = res));
+      this.searchLoading++;
       const res = await getCityData(
         dayjs(this.searchDate).format("YYYY-MM-DD"),
         this.searchType[1],
         cityId
       );
-      this.current.push(cityName);
+      this.searchLoading--;
+      if (this.current.length < 2)
+        this.current.push(cityName);
+      else
+        this.current[1] = cityName
       res.sort((a, b) => -a.name.localeCompare(b.name));
       this.leftOptions.yAxis.data = res.map((item) => item.name);
       this.leftOptions.series[0].data = res.map((item) => item["avg_price"]);
@@ -180,13 +192,11 @@ export default {
     this.leftOptions.toolbox.feature.myBackBtn.onclick = () => {
       this.current.splice(this.current.length - 1, 1);
       if (this.current.length === 0) {
-        this.handleLoadCountryData()
-        this.mapProvince = '全国'
-      }
-      else if (this.current.length === 1)
-        this.handleLoadProvinceData(this.current[0])
-      else
-        this.handleLoadCityData(this.current[1])
+        this.handleLoadCountryData();
+        this.mapProvince = "全国";
+      } else if (this.current.length === 1)
+        this.handleLoadProvinceData(this.current[0]);
+      else this.handleLoadCityData(this.current[1]);
     };
     this.provinceList = await getProvinceList();
   },
