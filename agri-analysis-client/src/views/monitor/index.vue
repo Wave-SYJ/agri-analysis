@@ -244,7 +244,7 @@ export default {
     color: rgba(0, 0, 0, 0.658);
     font-family: "微软雅黑";
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   .fragment-body {
