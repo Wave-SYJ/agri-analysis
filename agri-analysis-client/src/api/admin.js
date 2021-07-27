@@ -13,12 +13,20 @@ export async function getAdminList(pagination, sortInfo, searchObj) {
   return data;
 }
 
+export async function getUserInfo() {
+  const { data } = await request({
+    method: 'get',
+    url: '/api/admin'
+  });
+  return data;
+}
+
 export async function insertAdmin(data) {
   await request({
     method: 'put',
     url: '/api/admin',
     data
-  })
+  });
 }
 
 export async function deleteAdmins(list) {
@@ -26,7 +34,7 @@ export async function deleteAdmins(list) {
     method: 'delete',
     url: '/api/admin',
     data: list
-  })
+  });
 }
 
 export async function updateAdmin(data) {
@@ -34,5 +42,17 @@ export async function updateAdmin(data) {
     method: 'patch',
     url: '/api/admin',
     data
-  })
+  });
+}
+
+export async function login(username, password) {
+  const { data } = await request({
+    method: 'post',
+    url: '/api/admin/login',
+    data: {
+      username,
+      password
+    }
+  });
+  return data;
 }

@@ -1,8 +1,10 @@
 import json
+import jwt
 
-from flask import Blueprint, jsonify, request, abort
+from app.utils.auth import get_user
+from flask import Blueprint, jsonify, request, abort, current_app
 from sqlalchemy import text
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.models import db
 from app.models.admin import Admin
@@ -76,7 +78,11 @@ def modify_admin():
     return ""
 
 
-@bp.route('/admin', methods=['PATCH', 'PUT', 'DELETE', 'POST'])
+def get_user_info():
+    return jsonify(get_user())
+
+
+@bp.route('/admin', methods=['GET', 'PATCH', 'PUT', 'DELETE', 'POST'])
 def index():
     if request.method == 'POST':
         return list_admins()
@@ -86,5 +92,37 @@ def index():
         return delete_admins()
     elif request.method == 'PATCH':
         return modify_admin()
+    elif request.method == 'GET':
+        return get_user_info()
     else:
         abort(404)
+
+
+@bp.route('/admin/login', methods=['POST'])
+def login():
+    data = json.loads(request.get_data())
+    if data.get('username', None) is None:
+        return jsonify({
+            'reason': '请输入用户名',
+            'success': False
+        })
+    if data.get('password', None) is None:
+        return jsonify({
+            'reason': '请输入密码',
+            'success': False
+        })
+    user = Admin.query.filter_by(username=data['username']).all()
+    if len(user) is 0:
+        return jsonify({
+            'reason': '用户不存在',
+            'success': False
+        })
+    if not check_password_hash(user[0].password, data['password']):
+        return jsonify({
+            'reason': '密码错误',
+            'success': False
+        })
+    return jsonify({
+        'success': True,
+        'token': jwt.encode({"id": user[0].id}, current_app.config['SECRET_KEY'], algorithm="HS256")
+    })

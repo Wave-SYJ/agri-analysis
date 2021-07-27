@@ -9,13 +9,30 @@
     </div>
     <div class="header-title">农产品数据分析系统</div>
     <div class="header-user">
-      <el-link :underline="false" type="primary" @click="$router.push('/login')">登录</el-link>
+      <el-link :underline="false" type="primary" @click="$router.push('/login')" v-if="userInfo === null">登录</el-link>
+      <template v-else>
+        欢迎您，管理员 {{ userInfo.username }} ！
+      </template>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import { getUserInfo } from '@/utils/auth'
+
+export default {
+  data() {
+    return {
+      userInfo: null,
+      userInfoLoading: 0
+    }
+  },
+  async created() {
+    this.userInfoLoading++;
+    this.userInfo = await getUserInfo();
+    this.userInfoLoading--;
+  }
+};
 </script>
 
 <style scoped lang="scss">
