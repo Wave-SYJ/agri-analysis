@@ -41,7 +41,7 @@
       </el-form-item>
     </el-form>
 
-    <v-chart class="chart" :option="chartOption" />
+    <v-chart autoresize class="chart" :option="chartOption" />
   </div>
 </template>
 
