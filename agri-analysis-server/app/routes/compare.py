@@ -13,6 +13,10 @@ bp = Blueprint('compare_bp', __name__, url_prefix='/compare')
 @bp.route('/price', methods=['POST'])
 def get_compare_data():
     data = json.loads(request.data)
+    if data.get('items', None) is None or len(data['items']) == 0:
+        return '[]'
+    if data.get('dateRange', None) is None:
+        return '[]'
 
     t_product = df_reader('t_product').alias('t_product')
     t_variety = df_reader('t_variety').withColumnRenamed("name", "variety_name").alias('t_variety')

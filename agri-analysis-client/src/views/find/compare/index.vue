@@ -42,7 +42,7 @@
       </el-form>
     </div>
 
-    <div class="page-main">
+    <div class="page-main" v-loading="!!loading">
       <el-table class="page-main-left" :data="compareList">
         <el-table-column label="地区">
           <template v-slot="scope">{{ scope.row.market.name }}</template>
@@ -61,7 +61,8 @@
           >
         </el-table-column>
       </el-table>
-      <v-chart class="page-main-right" autoresize :option="chartOption" />
+      <el-empty class="page-main-right" v-if="!compareList || compareList.length == 0" description="暂无内容"/>
+      <v-chart v-else class="page-main-right" autoresize :option="chartOption" />
     </div>
   </div>
 </template>
@@ -122,7 +123,7 @@ export default {
       ],
 
       compareList: [],
-
+      loading: 0,
       chartOption,
     };
   },
@@ -153,6 +154,7 @@ export default {
       await this.loadData();
     },
     async loadData() {
+      this.loading++;
       const records = await getPriceDatas(
         this.timeRange.map(item => dayjs(item).format('YYYY-MM-DD')),
         this.compareList.map(item => ({
@@ -169,6 +171,7 @@ export default {
           return res ? res.price : 0
         })
       })
+      this.loading--;
     }
   },
 };
