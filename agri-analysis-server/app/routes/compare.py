@@ -22,7 +22,6 @@ def get_compare_data():
     t_market = df_reader('t_market').withColumnRenamed("name", "market_name").alias('t_market')
     count_df = t_product.filter((t_product.date >= data['dateRange'][0]) & (t_product.date <= data['dateRange'][1]))
 
-    print(data['items'])
     count_df = count_df.filter(
         reduce(
             lambda x, y: x | y,

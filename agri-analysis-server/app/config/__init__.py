@@ -38,7 +38,29 @@ class DevelopmentConfig(BaseConfig):
         init_sql('development')
 
 
+class ProductionConfig(BaseConfig):
+    SQLALCHEMY_DATABASE_URI = ''
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SECRET_KEY = 'some secret words'
+
+    @classmethod
+    def init_app(cls, app):
+        super().init_app(app)
+        cls.SECRET_KEY = yaml.load(open('app/config/auth.secret.yml'), Loader=yaml.SafeLoader)['production']['auth'][
+            'secret']
+        mysql_config = yaml.load(open('app/config/database.secret.yml'),
+                                 Loader=yaml.SafeLoader)['production']['database']
+
+        cls.SQLALCHEMY_DATABASE_URI = URL(drivername=mysql_config['drivername'], username=mysql_config['username'],
+                                          password=mysql_config['password'],
+                                          host=mysql_config['host'], port=mysql_config['port'],
+                                          database=mysql_config['database'])
+        CORS(app, supports_credentials=True)
+        init_sql('production')
+
+
 config = {
     'development': DevelopmentConfig,
-    'default': DevelopmentConfig
+    'default': DevelopmentConfig,
+    'production': ProductionConfig
 }
