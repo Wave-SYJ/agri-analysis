@@ -142,3 +142,4 @@ db/
 !db/.gitkeep
 app/config/database.secret.yml
 app/config/auth.secret.yml
+nohup.out
