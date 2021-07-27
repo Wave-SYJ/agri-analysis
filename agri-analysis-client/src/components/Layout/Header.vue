@@ -12,13 +12,14 @@
       <el-link :underline="false" type="primary" @click="$router.push('/login')" v-if="userInfo === null">登录</el-link>
       <template v-else>
         欢迎您，管理员 {{ userInfo.username }} ！
+        <el-link :underline="false" type="primary" @click="handleLogout">退出</el-link>
       </template>
     </div>
   </div>
 </template>
 
 <script>
-import { getUserInfo } from '@/utils/auth'
+import { getUserInfo, logout } from '@/utils/auth'
 
 export default {
   data() {
@@ -31,6 +32,13 @@ export default {
     this.userInfoLoading++;
     this.userInfo = await getUserInfo();
     this.userInfoLoading--;
+  },
+  methods: {
+    handleLogout() {
+      this.userInfo = null;
+      logout();
+      this.$message.success("退出成功")
+    }
   }
 };
 </script>

@@ -17,7 +17,6 @@ def get_user():
         if user is None or len(user) == 0:
             return None
         user = user[0].to_dict()
-        del user['password']
         return user
     except Exception as e:
         print(e)

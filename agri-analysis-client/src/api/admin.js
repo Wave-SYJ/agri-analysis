@@ -56,3 +56,15 @@ export async function login(username, password) {
   });
   return data;
 }
+
+export async function changePassword(old, current) {
+  const { data } = await request({
+    method: 'post',
+    url: '/api/admin/password',
+    data: {
+      old,
+      current
+    }
+  });
+  return data;
+}

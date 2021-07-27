@@ -79,7 +79,9 @@ def modify_admin():
 
 
 def get_user_info():
-    return jsonify(get_user())
+    user = get_user()
+    del user['password']
+    return jsonify(user)
 
 
 @bp.route('/admin', methods=['GET', 'PATCH', 'PUT', 'DELETE', 'POST'])
@@ -125,4 +127,38 @@ def login():
     return jsonify({
         'success': True,
         'token': jwt.encode({"id": user[0].id}, current_app.config['SECRET_KEY'], algorithm="HS256")
+    })
+
+
+@bp.route('/admin/password', methods=['POST'])
+def change_password():
+    data = json.loads(request.get_data())
+    if data.get('old', None) is None:
+        return jsonify({
+            'reason': '请输入原密码',
+            'success': False
+        })
+    if data.get('current', None) is None:
+        return jsonify({
+            'reason': '请输入新密码',
+            'success': False
+        })
+
+    user = get_user()
+    print(user)
+    if user is None:
+        return jsonify({
+            'reason': '请先登录',
+            'success': False
+        })
+    if not check_password_hash(user['password'], data['old']):
+        return jsonify({
+            'reason': '原密码错误',
+            'success': False
+        })
+    user["password"] = generate_password_hash(data['current'])
+    Admin.query.filter_by(id=user["id"]).update(user)
+    db.session.commit()
+    return jsonify({
+        'success': True,
     })
