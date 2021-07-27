@@ -1,6 +1,7 @@
 import json
 
 from flask import Blueprint, jsonify, request, abort
+from sqlalchemy import text
 from werkzeug.security import generate_password_hash
 
 from app.models import db
@@ -11,17 +12,44 @@ bp = Blueprint('admin_bp', __name__, url_prefix='/')
 
 
 def list_admins():
-    page_no = request.args.get('pageNo', 1, type=int)
-    page_size = request.args.get('pageSize', 10, type=int)
-    pagination = Admin.query.paginate(page_no, per_page=page_size, error_out=False)
-    items = serialize(pagination.items)
+    data = json.loads(request.get_data())
+
+    query = Admin.query
+    print(data)
+
+    # search
+    search_obj = data.get('searchObj', None)
+    if search_obj is not None:
+        if search_obj.get('username', None) is not None:
+            query = query.filter(Admin.username == search_obj['username'])
+
+    # sort
+    sort_info = data.get('sortInfo', None)
+    if sort_info is not None:
+        if sort_info['order'] == 'ascending':
+            query = query.order_by(text(sort_info['column']))
+        else:
+            query = query.order_by(text("-" + sort_info['column']))
+
+    # pagination
+    page_info = data.get('pagination', {
+        'pageNo': 1,
+        'pageSize': 10
+    })
+    page_no = page_info['pageNo']
+    page_size = page_info['pageSize']
+    query = query.paginate(page_no, per_page=page_size, error_out=False)
+
+    items = serialize(query.items)
     for item in items:
         del item['password']
+
+    items = serialize(query.items)
     return jsonify({
-        "pageCount": pagination.pages,
-        "pageNo": pagination.page,
-        "pageSize": pagination.per_page,
-        "total": pagination.total,
+        "pageCount": query.pages,
+        "pageNo": query.page,
+        "pageSize": query.per_page,
+        "total": query.total,
         "list": items
     })
 
@@ -48,15 +76,15 @@ def modify_admin():
     return ""
 
 
-@bp.route('/admin', methods=['GET', 'PUT', 'DELETE', 'POST'])
+@bp.route('/admin', methods=['PATCH', 'PUT', 'DELETE', 'POST'])
 def index():
-    if request.method == 'GET':
+    if request.method == 'POST':
         return list_admins()
     elif request.method == 'PUT':
         return insert_admin()
     elif request.method == 'DELETE':
         return delete_admins()
-    elif request.method == 'POST':
+    elif request.method == 'PATCH':
         return modify_admin()
     else:
         abort(404)

@@ -21,9 +21,9 @@ export default {
     }
   },
   methods: {
-    async handleRefresh(pagination) {
+    async handleRefresh(pagination, sortInfo, searchObj) {
       this.loading++;
-      const res = await getAdminList(pagination.pageNo, pagination.pageSize);
+      const res = await getAdminList(pagination, sortInfo, searchObj);
       this.pagination = pagination
       this.tableData = res.list;
       this.totalItmes = res.total;

@@ -8,7 +8,9 @@ export default [
     type: 'text',
     format: 'YYYY-MM-DD',
     prop: 'username',
-    editable: true
+    editable: true,
+    sortable: true,
+    searchable: true
   },
   {
     title: '身份',
