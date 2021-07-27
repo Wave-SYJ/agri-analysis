@@ -1,13 +1,13 @@
 import json
-import jwt
 
-from app.utils.auth import get_user
+import jwt
 from flask import Blueprint, jsonify, request, abort, current_app
 from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.models import db
 from app.models.admin import Admin
+from app.utils.auth import get_user
 from app.utils.serialize import serialize
 
 bp = Blueprint('admin_bp', __name__, url_prefix='/')

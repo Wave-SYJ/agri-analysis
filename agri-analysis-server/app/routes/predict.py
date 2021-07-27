@@ -1,9 +1,6 @@
 import json
 
-from flask import Blueprint, jsonify, request
-
-from app.spark import df_reader
-import pyspark.sql.functions as f
+from flask import Blueprint, request
 
 bp = Blueprint('predict_bp', __name__)
 

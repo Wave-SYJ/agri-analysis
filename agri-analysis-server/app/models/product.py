@@ -1,10 +1,9 @@
-from sqlalchemy.orm import backref
+from sqlalchemy_serializer import SerializerMixin
 
 from . import db
 from . import gen_id
 from .market import Market
 from .variety import Variety
-from sqlalchemy_serializer import SerializerMixin
 
 
 class Product(db.Model, SerializerMixin):

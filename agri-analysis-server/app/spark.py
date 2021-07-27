@@ -1,6 +1,6 @@
-from pyspark.sql import SparkSession
-from pyspark import SparkConf
 import yaml
+from pyspark import SparkConf
+from pyspark.sql import SparkSession
 
 app_name = "agri-analysis-spark"
 master = "local[*]"

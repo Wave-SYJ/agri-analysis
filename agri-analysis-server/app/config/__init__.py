@@ -1,8 +1,8 @@
-import os
+import yaml
 from flask_cors import CORS
 from sqlalchemy.engine import URL
+
 from app.spark import init_sql
-import yaml
 
 
 class BaseConfig:  # 基本配置类

@@ -1,9 +1,10 @@
 from flask import Blueprint, jsonify, request
+
+from app.models.city import City
+from app.models.market import Market
 from app.models.province import Province
 from app.models.type import Type
 from app.models.variety import Variety
-from app.models.city import City
-from app.models.market import Market
 from app.utils.serialize import serialize
 
 bp = Blueprint('category_bp', __name__, url_prefix='/')

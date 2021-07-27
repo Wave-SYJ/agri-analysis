@@ -7,7 +7,6 @@ from app.models.product import Product
 from app.models.type import Type
 from app.models.variety import Variety
 from app.spark import df_reader
-from app.spark import spark
 
 bp = Blueprint('monitor_bp', __name__, url_prefix='/monitor')
 

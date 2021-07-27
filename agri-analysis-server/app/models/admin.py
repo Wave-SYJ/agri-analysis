@@ -1,6 +1,7 @@
+from sqlalchemy_serializer import SerializerMixin
+
 from . import db
 from . import gen_id
-from sqlalchemy_serializer import SerializerMixin
 
 
 class Admin(db.Model, SerializerMixin):

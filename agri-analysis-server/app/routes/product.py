@@ -2,7 +2,6 @@ import json
 
 from flask import Blueprint, jsonify, request, abort
 from sqlalchemy import text
-from werkzeug.security import generate_password_hash
 
 from app.models import db
 from app.models.product import Product

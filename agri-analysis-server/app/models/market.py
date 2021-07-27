@@ -1,9 +1,8 @@
-from sqlalchemy.orm import backref
+from sqlalchemy_serializer import SerializerMixin
 
 from . import db
 from . import gen_id
 from .city import City
-from sqlalchemy_serializer import SerializerMixin
 
 
 class Market(db.Model, SerializerMixin):

@@ -2,8 +2,11 @@ from datetime import date
 
 from flask import Flask
 from flask.json import JSONEncoder
+from werkzeug.security import generate_password_hash
 
 from app.config import config
+from app.models import db
+from app.models.admin import Admin
 from . import models, routes
 
 
@@ -23,5 +26,9 @@ def create_app(config_name='default'):
 
     models.init_app(app)
     routes.init_app(app)
+
+    admin = Admin.query().filter(username='admin').all()
+    if admin is None or len(admin) == 0:
+        db.session.add(Admin("admin", generate_password_hash('admin'), 'super-admin'))
 
     return app

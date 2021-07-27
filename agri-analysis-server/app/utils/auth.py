@@ -1,6 +1,7 @@
-from flask import current_app, request, jsonify
-from app.models.admin import Admin
 import jwt
+from flask import current_app, request
+
+from app.models.admin import Admin
 
 
 def get_user():

@@ -1,9 +1,8 @@
-from sqlalchemy.orm import backref
+from sqlalchemy_serializer import SerializerMixin
 
 from . import db
 from . import gen_id
 from .province import Province
-from sqlalchemy_serializer import SerializerMixin
 
 
 class City(db.Model, SerializerMixin):
