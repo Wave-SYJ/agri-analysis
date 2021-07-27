@@ -36,7 +36,6 @@ def get_province_data(province_id):
     t_product = df_reader('t_product')
     t_market = df_reader('t_market')
     t_city = df_reader('t_city')
-    t_province = df_reader('t_province')
 
     avg_df = t_product.filter((t_product.date == data['date']) & (t_product.variety_id == data['varietyId'])) \
         .join(t_market, t_product.market_id == t_market.id, 'left_outer') \
