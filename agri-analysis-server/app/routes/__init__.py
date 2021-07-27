@@ -5,6 +5,7 @@ from .product import bp as product_bp
 from .region import bp as region_bp
 from .compare import bp as compare_bp
 from .sell import bp as sell_bp
+from .predict import bp as predict_bp
 
 
 def init_app(app):
@@ -15,3 +16,4 @@ def init_app(app):
     app.register_blueprint(region_bp)
     app.register_blueprint(compare_bp)
     app.register_blueprint(sell_bp)
+    app.register_blueprint(predict_bp)

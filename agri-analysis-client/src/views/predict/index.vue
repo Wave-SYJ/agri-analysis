@@ -1,151 +1,132 @@
 <template>
   <div class="page-wrapper">
     <el-form inline label-position="right" class="search-pane">
-      <el-form-item label="市场选择">
+      <el-form-item label="按照该时间段预测">
+        <el-date-picker
+          v-model="dateRange"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        >
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="地区">
         <el-cascader
-          collapse-tags
-          :options="regionList"
           v-model="searchMarket"
-          :props="{ multiple: true }"
-          clearable
+          :props="{
+            lazy: true,
+            lazyLoad: loadMarketCascade,
+          }"
         />
       </el-form-item>
 
-      <div style="margin-bottom: 20px">
-        农产品种类
-        <el-select placeholder="请选择" v-model="timeInterval">
-          <el-option label="银耳" value="year" />
-          <el-option label="金针菇" value="month" />
-          <el-option label="胡萝卜" value="day" />
-        </el-select>
-      </div>
+      <el-form-item label="种类">
+        <el-cascader
+          v-model="searchType"
+          :props="{
+            lazy: true,
+            lazyLoad: loadTypeCascade,
+          }"
+        />
+      </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="queryclick">预测</el-button>
+        <el-button
+          type="primary"
+          @click="handleQuery"
+          :loading="!!searchLoading"
+          >预测</el-button
+        >
       </el-form-item>
     </el-form>
-
-    <div class="block">
-      <span class="demonstration">按照该时间段预测 </span>
-      <el-date-picker
-        type="datetimerange"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-      >
-      </el-date-picker>
-    </div>
-    <br />
 
     <v-chart class="chart" :option="chartOption" />
   </div>
 </template>
 
 <script>
-import regionList from "./fakeRegionData";
+import {
+  getProvinceList,
+  getMarketList,
+  getCityList,
+  getTypeList,
+  getVarietyList,
+} from "@/api/category";
+import chartOption from "./chartOption";
+import { getPredictData } from "@/api/predict";
+import dayjs from 'dayjs';
 
 export default {
   data() {
     return {
-      regionList,
       searchMarket: null,
       searchType: null,
-      dayCount: 0,
-      timeInterval: null,
-      chartOption: {
-        backgroundColor: "#fff",
-        title: {
-          text: "农产品价格预测折线图",
-          textStyle: {
-            color: "#000",
-            fontSize: 18,
-            fontWeight: "bold",
-          },
-          subtext: "已根据您选择的时间段预测价格",
-          subtextStyle: {
-            color: "#000",
-          },
-        },
-        tooltip: {
-          show: true,
-          trigger: "axis",
-          axisPointer: {
-            type: "cross",
-            crossStyle: {
-              color: "#000",
-            },
-          },
-        },
-        grid: {
-          left: 20,
-          right: 20,
-          top: 80,
-          bottom: 20,
-          containLabel: true,
-        },
-        xAxis: {
-          show: true,
-          axisLabel: {
-            interval: 1,
-            rotate: -20,
-            margin: 30,
-            color: "#000",
-            align: "center",
-          },
-          axisTick: {
-            alignWithLabel: true,
-            lineStyle: {
-              color: "#000",
-            },
-          },
-          data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        },
-        yAxis: [
-          {
-            type: "value",
-            name: "￥",
-            nameTextStyle: {
-              color: "#000",
-            },
-            axisLabel: {
-              color: "#000",
-            },
-            axisTick: {
-              alignWithLabel: true,
-              lineStyle: {
-                color: "#000",
-              },
-            },
-            splitLine: {
-              show: false,
-            },
-          },
-        ],
-        series: [
-          {
-            type: "line",
-            name: "测试",
-            stack: "人数",
-            data: [5, 9, 3, 7, 8, 12, 45, 25, 11, 6, 9, 20],
-            label: {
-              show: true,
-              position: "insideTop",
-              offset: [0, 20],
-              color: "#000",
-            },
-            emphasis: {
-              label: {
-                color: "#000",
-              },
-            },
-          },
-        ],
-      },
+      dateRange: null,
+      searchLoading: 0,
+      getTypeOptionsFuns: [
+        async () =>
+          (await getTypeList()).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: false,
+          })),
+        async (typeId) =>
+          (await getVarietyList(typeId)).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: true,
+          })),
+      ],
+      getMarketOptionsFuns: [
+        async () =>
+          (await getProvinceList()).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: false,
+          })),
+        async (provinceId) =>
+          (await getCityList(provinceId)).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: false,
+          })),
+        async (cityId) =>
+          (await getMarketList(cityId)).map((item) => ({
+            label: item.name,
+            value: item.id,
+            leaf: true,
+          })),
+      ],
+
+      chartOption,
     };
   },
   methods: {
-    queryclick() {
-      this.dayCount = Math.floor(Math.random() * 30 + 1);
+    loadTypeCascade(node, resolve) {
+      this.getTypeOptionsFuns[node.level](node.value).then((res) =>
+        resolve(res)
+      );
+    },
+    loadMarketCascade(node, resolve) {
+      this.getMarketOptionsFuns[node.level](node.value).then((res) =>
+        resolve(res)
+      );
+    },
+    async handleQuery() {
+      if (this.dateRange === null || this.dateRange.length === 0)
+        return this.$message.error("日期范围不能为空");
+      if (this.searchMarket === null || this.searchMarket.length === 0)
+        return this.$message.error("市场不能为空");
+      if (this.searchType === null || this.searchType.length === 0)
+        return this.$message.error("种类不能为空");
+      console.log(
+        await getPredictData(
+          this.dateRange.map(item => dayjs(item).format('YYYY-MM-DD')),
+          this.searchMarket[2],
+          this.searchType[1]
+        )
+      );
     },
   },
 };
@@ -153,7 +134,12 @@ export default {
 
 <style scoped lang="scss">
 .page-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   .search-pane {
+    flex: none;
     display: flex;
     justify-content: center;
     border-bottom: 1px solid #dcdfe6;
@@ -161,8 +147,8 @@ export default {
   }
 
   .chart {
-    width: 900px;
-    height: 500px;
+    width: 100%;
+    flex: auto;
   }
 }
 </style>
