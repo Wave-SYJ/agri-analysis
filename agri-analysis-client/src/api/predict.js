@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import dayjs from 'dayjs';
 
 export async function getPredictData(dateRange, marketId, varietyId) {
   const { data } = await request({
@@ -11,5 +12,14 @@ export async function getPredictData(dateRange, marketId, varietyId) {
     method: 'post'
   });
 
-  return data;
+  return {
+    history: data.history.map((item) => ({
+      date: item.ds,
+      price: item.y
+    })),
+    predict: data.predict.map((item) => ({
+      date: dayjs(+item.ds).format('YYYY-MM-DD'),
+      price: item.yhat.toFixed(2)
+    }))
+  };
 }

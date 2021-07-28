@@ -44,7 +44,7 @@ export default {
         color: '#000'
       }
     },
-    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    data: []
   },
   yAxis: [
     {
@@ -67,21 +67,39 @@ export default {
       }
     }
   ],
+  legend: {
+    top: 50,
+    icon: 'rect',
+    itemWidth: 14,
+    itemHeight: 7,
+    itemGap: 13, //间隔
+    data: ['实际', '预测'],
+    right: '4%',
+    textStyle: {
+      fontSize: 20,
+      color: '#73716D'
+    }
+  },
   series: [
     {
       type: 'line',
-      name: '测试',
-      stack: '人数',
-      data: [5, 9, 3, 7, 8, 12, 45, 25, 11, 6, 9, 20],
-      label: {
-        show: true,
-        position: 'insideTop',
-        offset: [0, 20],
-        color: '#000'
-      },
+      name: '实际',
+      stack: '实际',
+      data: [],
       emphasis: {
         label: {
           color: '#000'
+        }
+      }
+    },
+    {
+      type: 'line',
+      name: '预测',
+      stack: '预测',
+      data: [],
+      emphasis: {
+        label: {
+          color: '#f00'
         }
       }
     }

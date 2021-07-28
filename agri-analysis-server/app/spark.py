@@ -7,6 +7,8 @@ master = "local[*]"
 
 conf = SparkConf().setAppName(app_name).setMaster(master)
 spark = SparkSession.builder.config(conf=conf).getOrCreate()
+spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+
 
 mysql_config = {}
 mysql_url = ""

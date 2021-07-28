@@ -41,7 +41,8 @@
       </el-form-item>
     </el-form>
 
-    <v-chart autoresize class="chart" :option="chartOption" />
+    <el-empty v-loading="!!searchLoading" class="chart" v-if="!show" description="暂无内容" />
+    <v-chart v-loading="!!searchLoading" v-else autoresize class="chart" :option="chartOption" />
   </div>
 </template>
 
@@ -55,7 +56,7 @@ import {
 } from "@/api/category";
 import chartOption from "./chartOption";
 import { getPredictData } from "@/api/predict";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 export default {
   data() {
@@ -100,6 +101,7 @@ export default {
       ],
 
       chartOption,
+      show: false,
     };
   },
   methods: {
@@ -120,13 +122,30 @@ export default {
         return this.$message.error("市场不能为空");
       if (this.searchType === null || this.searchType.length === 0)
         return this.$message.error("种类不能为空");
-      console.log(
-        await getPredictData(
-          this.dateRange.map(item => dayjs(item).format('YYYY-MM-DD')),
-          this.searchMarket[2],
-          this.searchType[1]
-        )
+      this.searchLoading++;
+      const res = await getPredictData(
+        this.dateRange.map((item) => dayjs(item).format("YYYY-MM-DD")),
+        this.searchMarket[2],
+        this.searchType[1]
       );
+
+      const dates = Array.from(
+        new Set([
+          ...res.history.map((item) => item.date),
+          ...res.predict.map((item) => item.date),
+        ])
+      ).sort((a, b) => +dayjs(a) - +dayjs(b));
+      this.chartOption.xAxis.data = dates;
+      this.chartOption.series[0].data = dates.map((date) => {
+        const findResult = res.history.find((item) => item.date === date);
+        return findResult ? findResult.price : null;
+      });
+      this.chartOption.series[1].data = dates.map((date) => {
+        const findResult = res.predict.find((item) => item.date === date);
+        return findResult ? findResult.price : null;
+      });
+      this.searchLoading--;
+      this.show = true;
     },
   },
 };
