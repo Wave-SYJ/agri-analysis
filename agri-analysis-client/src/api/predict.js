@@ -1,13 +1,14 @@
 import request from '@/utils/request';
 import dayjs from 'dayjs';
 
-export async function getPredictData(dateRange, marketId, varietyId) {
+export async function getPredictData(dateRange, marketId, varietyId, predictDays) {
   const { data } = await request({
     url: '/api/predict',
     data: {
       dateRange,
       marketId,
-      varietyId
+      varietyId,
+      predictDays
     },
     method: 'post'
   });

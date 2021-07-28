@@ -35,7 +35,7 @@ def get_predict_data():
     model.fit(history_df.toPandas())
 
     future_pd = model.make_future_dataframe(
-        periods=10,
+        periods=data['predictDays'],
         freq='d',
         include_history=False
     )

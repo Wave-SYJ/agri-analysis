@@ -11,6 +11,9 @@
         >
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="预测天数">
+        <el-input-number v-model="predictDays" :min="1"></el-input-number>
+      </el-form-item>
       <el-form-item label="地区">
         <el-cascader
           v-model="searchMarket"
@@ -102,6 +105,7 @@ export default {
 
       chartOption,
       show: false,
+      predictDays: 10
     };
   },
   methods: {
@@ -126,7 +130,8 @@ export default {
       const res = await getPredictData(
         this.dateRange.map((item) => dayjs(item).format("YYYY-MM-DD")),
         this.searchMarket[2],
-        this.searchType[1]
+        this.searchType[1],
+        this.predictDays
       );
 
       const dates = Array.from(
