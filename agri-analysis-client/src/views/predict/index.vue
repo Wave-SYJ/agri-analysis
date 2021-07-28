@@ -134,6 +134,9 @@ export default {
         this.predictDays
       );
 
+      if (res.history === null || res.history.length === 0)
+        return this.searchLoading--, this.show = true, this.$message.info('无历史数据，无法预测')
+
       const dates = Array.from(
         new Set([
           ...res.history.map((item) => item.date),

@@ -23,6 +23,11 @@ def get_predict_data():
         & (t_product.variety_id == data['varietyId'])).select('date', 'price') \
         .withColumnRenamed('date', 'ds').withColumnRenamed('price', 'y')
     history_df = total_df.filter(total_df.ds <= data['dateRange'][1])
+    if history_df.count() == 0:
+        return jsonify({
+            'history': [],
+            'predict': []
+        })
 
     model = Prophet(
         growth='linear',
