@@ -17,7 +17,9 @@ export default {
       columns,
       loading: 0,
       totalItmes: 0,
-      pagination: {}
+      pagination: {},
+      sortInfo: null,
+      searchObj: null
     }
   },
   methods: {
@@ -25,6 +27,8 @@ export default {
       this.loading++;
       const res = await getAdminList(pagination, sortInfo, searchObj);
       this.pagination = pagination
+      this.searchObj = searchObj
+      this.sortInfo = sortInfo
       this.tableData = res.list;
       this.totalItmes = res.total;
       this.loading--;
@@ -32,19 +36,19 @@ export default {
     async handleInsert(data) {
       this.loading++;
       await insertAdmin(data)
-      this.handleRefresh(this.pagination);
+      this.handleRefresh(this.pagination, this.sortInfo, this.searchObj);
       this.loading--;
     },
     async handleDelete(list) {
       this.loading++;
       await deleteAdmins(list);
-      this.handleRefresh(this.pagination);
+      this.handleRefresh(this.pagination, this.sortInfo, this.searchObj);
       this.loading--;
     },
     async handleUpdate(data) {
       this.loading++;
       await updateAdmin(data);
-      this.handleRefresh(this.pagination);
+      this.handleRefresh(this.pagination, this.sortInfo, this.searchObj);
       this.loading--;
     }
   },

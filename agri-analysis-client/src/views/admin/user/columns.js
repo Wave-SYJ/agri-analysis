@@ -24,6 +24,7 @@ export default [
   },
   {
     title: '操作',
-    type: 'operations'
+    type: 'operations',
+    nullable: true
   }
 ]

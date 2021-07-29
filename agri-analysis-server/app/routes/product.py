@@ -79,7 +79,8 @@ def modify_product():
         'variety_id': data['variety_id'],
         'market_id': data['market_id'],
         'price': data['price'],
-        'date': data['date']
+        'date': data['date'],
+        'sell_number': data['sell_number']
     })
     db.session.commit()
     return ""

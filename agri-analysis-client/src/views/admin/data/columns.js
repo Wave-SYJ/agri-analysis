@@ -52,7 +52,7 @@ export default [
     precision: 2,
     step: 0.1,
     sortable: true,
-    nullabel: false
+    nullable: false
   },
   {
     title: '市场',
@@ -72,7 +72,7 @@ export default [
       editingObj.market_id = newId;
       editingObj.market = await getMarket(newId);
     },
-    nullabel: false
+    nullable: false
   },
   {
     title: '售卖人次',
@@ -83,11 +83,11 @@ export default [
     precision: 0,
     step: 1,
     sortable: true,
-    nullabel: false
+    nullable: false
   },
   {
     title: '操作',
     type: 'operations',
-    nullabel: true
+    nullable: true
   }
 ];

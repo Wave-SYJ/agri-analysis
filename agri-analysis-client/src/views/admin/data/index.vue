@@ -22,7 +22,7 @@ import {
 } from "@/api/product";
 import columns from "./columns";
 import dayjs from "dayjs";
-import {subscribe} from '@/utils/auth'
+import { subscribe } from "@/utils/auth";
 
 export default {
   components: {
@@ -35,7 +35,9 @@ export default {
       loading: 0,
       totalItmes: 0,
       pagination: {},
-      allowEdit: false
+      allowEdit: false,
+      sortInfo: null,
+      searchObj: null,
     };
   },
   methods: {
@@ -69,35 +71,39 @@ export default {
 
       const res = await getProductList(pagination, sortInfo, searchObj);
       this.pagination = pagination;
+      this.searchObj = searchObj;
+      this.sortInfo = sortInfo;
       this.tableData = res.list;
       this.totalItmes = res.total;
       this.loading--;
     },
     async handleInsert(data) {
       this.loading++;
+      data.date = dayjs(data.date).format("YYYY-MM-DD");
       await insertProduct(data);
-      this.handleRefresh(this.pagination);
+      this.handleRefresh(this.pagination, this.sortInfo, this.searchObj);
       this.loading--;
     },
     async handleDelete(list) {
       this.loading++;
       await deleteProducts(list);
-      this.handleRefresh(this.pagination);
+      this.handleRefresh(this.pagination, this.sortInfo, this.searchObj);
       this.loading--;
     },
     async handleUpdate(data) {
       this.loading++;
+      data.date = dayjs(data.date).format("YYYY-MM-DD");
       await updateProduct(data);
-      this.handleRefresh(this.pagination);
+      this.handleRefresh(this.pagination, this.sortInfo, this.searchObj);
       this.loading--;
     },
   },
   created() {
-    const that = this
-    subscribe(val => {
-      that.allowEdit = !!val
-    })
-  }
+    const that = this;
+    subscribe((val) => {
+      that.allowEdit = !!val;
+    });
+  },
 };
 </script>
 

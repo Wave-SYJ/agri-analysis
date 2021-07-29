@@ -70,8 +70,8 @@ export default {
   series: [
     {
       type: 'line',
-      name: '测试',
-      stack: '人数',
+      name: '售卖次数',
+      stack: '人次',
       data: [],
       label: {
         show: true,

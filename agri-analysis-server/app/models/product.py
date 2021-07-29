@@ -22,7 +22,9 @@ class Product(db.Model, SerializerMixin):
     def __init__(self):
         pass
 
-    def __int__(self, name, price, date):
-        self.name = name
+    def __init__(self, variety_id, market_id, price, date, sell_number, **kwargs):
+        self.variety_id = variety_id
+        self.market_id = market_id
         self.price = price
         self.date = date
+        self.sell_number = sell_number

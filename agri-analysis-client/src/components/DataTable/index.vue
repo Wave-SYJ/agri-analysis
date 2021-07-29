@@ -471,7 +471,7 @@ export default {
       this.searchDrawerShow = false;
     },
     handleClearSearch() {
-      this.searching = false,
+      this.searching = false;
       this.$emit("refresh", this.pagination, this.sortInfo, this.searchObj);
       this.searchObj = {}
     },
