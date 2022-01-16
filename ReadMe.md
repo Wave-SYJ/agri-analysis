@@ -1,10 +1,6 @@
- 
-
 # 农产品市场数据分析系统
 
 本项目为东南大学软件学院2021年暑期实训第五组项目。
-
-项目仓库地址：http://119.45.112.228:8080/Lirong_Ren/G05_Five_Element_Linear_Equations
 
 ## 目录结构
 
@@ -17,13 +13,17 @@
 以下各依赖版本为推荐配置。
 
 - node 14.17.3 LTS 
+
 - npm 7.20.0
 
 - python  3.9.6
 
 - MySQL 8.0.25 （必须为 MySQL 8）
+
 - JDK  8u301 （必须为 JDK 8）
+
 - hadoop 2.7.7 （必须为 hadoop 2.7.x）
+
 - spark-3.0.3-bin-hadoop2.7 （必须）
 
 - nginx 1.20.1 （生产环境需要）
@@ -52,25 +52,25 @@
 在 `agri-analysis-server` 目录下：
 
 - 建立 python 虚拟环境：
-
+  
   ```shell
   python -m venv venv
   ```
 
 - 启用虚拟环境：
-
+  
   ```shell
   source venv/bin/activate
   ```
 
 - 安装依赖：
-
-  ``` shell
+  
+  ```shell
   pip install -r requirements.txt
   ```
 
 - 运行：
-
+  
   ```shell
   ./run.sh
   ```
@@ -86,35 +86,35 @@
 在 `agri-analysis-spider` 目录下：
 
 - 建立 python 虚拟环境：
-
+  
   ```shell
   python -m venv venv
   ```
 
 - 启用虚拟环境：
-
+  
   ```shell
   source venv/bin/activate
   ```
 
 - 安装依赖：
-
-  ``` shell
+  
+  ```shell
   pip install -r requirements.txt
   ```
 
 - 爬取区域数据和农产品种类数据：
-
+  
   ```shell
   scrapy crawl city & scrapy crawl market & scrapy crawl variety
   ```
 
 - 爬取段农产品价格和售卖行情数据：
-
+  
   ```shell
   scrapy crawl all_product -a start=2021-01-01 -a end=2021-07-28
   ```
-
+  
   其中 `start` 参数为爬取起始日期，为空则默认为`2014-01-01`；`end` 参数为爬虫终止日期，为空则默认为程序运行日期。
 
 ### 3. 运行前端项目
@@ -122,13 +122,13 @@
 在 `agri_analysis-client` 目录下：
 
 - 安装依赖：
-
+  
   ```shell
   npm install
   ```
 
 - 运行：
-
+  
   ```shell
   npm run serve
   ```
@@ -140,25 +140,25 @@
 这里采用 nginx 进行部署。
 
 - 静默启动后端：
-
+  
   在后端目录启动虚拟环境，然后执行：
-
+  
   ```shell
   nohup ./run.sh &
   ```
 
 - 前端打包：
-
+  
   在前端目录：
-
+  
   ```shell
   npm run build
   ```
-
+  
   打包文件在 `dist` 文件夹下。
 
 - 配置 nginx ，参考如下配置：
-
+  
   ```nginx
   server {
       listen          8080;
@@ -175,7 +175,13 @@
       }
   }
   ```
-
+  
   启动/重新启动 nginx 加载该配置。
-
+  
   项目运行在 8080 端口。
+
+## 吐槽（
+
+- 本项目使用的Python后端技术栈给我的体验**极差**，尤其是那个ORM，以后再也不用了（
+
+- 使用了一些大数据技术栈，在一台机器上运行时效率反而远逊于直接使用MySQL，但是课程要求这样我也没办法（
